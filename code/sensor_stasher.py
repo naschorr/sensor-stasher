@@ -50,5 +50,9 @@ class SensorStasher:
 if (__name__ == '__main__'):
     monitor = SensorStasher("sensor_stasher", 60)
     # monitor.register_sensor(PMS7003Driver)
-    monitor.register_sensor(TestSensorDriver)
+    monitor.register_sensor(TestSensorDriver, {'name': 'test_sensor_0'})
+    monitor.register_sensor(TestSensorDriver, {'name': 'test_sensor_1'})
+    monitor.register_sensor(TestSensorDriver, {'name': 'test_sensor_2'})
+    monitor.register_sensor(TestSensorDriver, {'name': 'test_sensor_3'})
+    monitor.register_sensor(TestSensorDriver, {'name': 'test_sensor_4'})
     monitor.start_monitoring()

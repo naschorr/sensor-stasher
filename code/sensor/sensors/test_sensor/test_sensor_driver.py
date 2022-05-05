@@ -5,8 +5,11 @@ from sensor.sensor_adapter import SensorAdapter
 
 class TestSensorDriver(SensorAdapter):
     def __init__(self, config: Dict = None):
-        self.config = config
+        self.name = config.get('name', 'test_sensor')
     
 
     async def read(self) -> Dict:
-        return {'test_key': 'test_value'}
+        return {
+            'name': self.name,
+            'test_key': 'test_value'
+        }
