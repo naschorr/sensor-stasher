@@ -2,11 +2,11 @@ import time
 from pms7003 import Pms7003Sensor, PmsSensorException
 from typing import Dict
 
-from code.sensor.sensor_adapter import SensorAdapter
-from .pms7003_datum import PMS7003_Datum
+from sensor.sensor_adapter import SensorAdapter
+from .pms7003_datum import PMS7003Datum
 
 
-class PMS7003_Driver(SensorAdapter):
+class PMS7003Driver(SensorAdapter):
     def __init__(self, path=None):
         if(path is None):
             ## Assuming we're on a Raspberry Pi, this is the default path to the serial device
@@ -34,7 +34,7 @@ class PMS7003_Driver(SensorAdapter):
             self.sleep()
         
         ## Format and return the data
-        return PMS7003_Datum(data).to_dict()
+        return PMS7003Datum(data).to_dict()
 
     ## Methods
 

@@ -5,12 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "SensorStasher",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "justMyCode": false
+            "stopOnEntry": false,
+            "python": "${workspaceFolder}/Scripts/python.exe",
+            "program": "${workspaceFolder}/code/sensor_stasher.py",
+            "cwd": "${workspaceFolder}/code",
+            "env": {},
+            "justMyCode": false,
+            "debugOptions": [
+                "RedirectOutput"
+            ]
         }
     ]
 }

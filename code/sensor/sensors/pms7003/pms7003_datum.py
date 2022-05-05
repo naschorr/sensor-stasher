@@ -1,9 +1,9 @@
 from typing import Dict
 
-from code.sensor.sensor_datum import SensorDatum
+from sensor.sensor_datum import SensorDatum
 
 
-class PMS7003_Datum(SensorDatum):
+class PMS7003Datum(SensorDatum):
     def __init__(self, measurement: Dict):
         super().__init__()
 

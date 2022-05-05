@@ -1,9 +1,10 @@
 import asyncio
 from typing import Dict
 
-from code.sensor.sensor_adapter import SensorAdapter
-from code.sensor.sensors.pms7003.pms7003_driver import PMS7003_Driver
-from code.sensor.sensor_manager import SensorManager
+from sensor.sensor_adapter import SensorAdapter
+from sensor.sensors.pms7003.pms7003_driver import PMS7003Driver
+from sensor.sensors.test_sensor.test_sensor_driver import TestSensorDriver
+from sensor.sensor_manager import SensorManager
 
 
 class SensorStasher:
@@ -20,7 +21,7 @@ class SensorStasher:
         if config is None:
             config = {}
 
-        self.sensor_manager.register_sensor(sensor(config))
+        self.sensor_manager.register_sensor(sensor, config)
 
 
     async def _process_sensor_data_loop(self):
@@ -48,5 +49,6 @@ class SensorStasher:
 
 if (__name__ == '__main__'):
     monitor = SensorStasher("sensor_stasher", 60)
-    monitor.register_sensor(PMS7003_Driver)
+    # monitor.register_sensor(PMS7003Driver)
+    monitor.register_sensor(TestSensorDriver)
     monitor.start_monitoring()
