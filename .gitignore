@@ -154,3 +154,6 @@ pyvenv.cfg
 pip-selfcheck.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,virtualenv
+
+## Don't let dev configs get pushed to the remote repo
+*config.dev.json
