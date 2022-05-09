@@ -96,10 +96,11 @@ def initialize_logging(logger):
 
     ## Windows has an issue with overwriting old logs (from the previous day, or older) automatically so just delete
     ## them. This is hacky, but I only use Windows for development so it's not a big deal.
-    last_modified = datetime.datetime.fromtimestamp(os.path.getmtime(log_file))
-    now = datetime.datetime.now()
-    if (last_modified.day != now.day):
-        os.remove(log_file)
+    if ('nt' in os.name and log_file.exists()):
+        last_modified = datetime.datetime.fromtimestamp(os.path.getmtime(log_file))
+        now = datetime.datetime.now()
+        if (last_modified.day != now.day):
+            os.remove(log_file)
 
     ## Setup and add the timed rotating log handler to the logger
     backup_count = config.get("log_backup_count", 7)    # Store a week's logs then start overwriting them
