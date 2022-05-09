@@ -1,15 +1,17 @@
 from pathlib import Path
-from typing import Dict, List
+from typing import List
+import logging
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 from storage.storage_adapter import StorageAdapter
 from sensor.sensor_datum import SensorDatum
-from config import load_config
+from utilities import load_config, initialize_logging
 
 class InfluxDBClient(StorageAdapter):
     def __init__(self, system_type: str, system_id: str):
         config = load_config(Path(__file__).parent)
+        self.logger = initialize_logging(logging.getLogger(__name__))
         
         self.url = config.get('url')
         self.api_token = config.get('api_token')
@@ -20,6 +22,8 @@ class InfluxDBClient(StorageAdapter):
 
         self.client = influxdb_client.InfluxDBClient(url=self.url, token=self.api_token, org=self.organization)
         self.write_api = self.client.write_api(write_options=SYNCHRONOUS)
+
+        self.logger.debug(f"Initialized InfluxDB client. url: '{self.url}', organization: '{self.organization}', bucket: '{self.bucket}'")
 
 
     def _build_points_from_data(self, data: SensorDatum) -> List[influxdb_client.Point]:

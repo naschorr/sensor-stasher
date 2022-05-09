@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from pms7003 import Pms7003Sensor, PmsSensorException
 from pathlib import Path
 
@@ -6,11 +7,12 @@ from sensor.sensor_adapter import SensorAdapter
 from sensor.sensor_datum import SensorDatum
 from sensor.sensor_categories import SensorCategories
 from .pms7003_datum import PMS7003Datum
-from config import load_config
+from utilities import load_config, initialize_logging
 
 class PMS7003Driver(SensorAdapter):
     def __init__(self, sensor_id: str):
         config = load_config(Path(__file__).parent)
+        self.logger = initialize_logging(logging.getLogger(__name__))
 
         self.serial_device_path = config.get('serial_device_path')
         self.wakeup_time_seconds: int = config.get('wakeup_time_seconds', 30)
@@ -19,7 +21,9 @@ class PMS7003Driver(SensorAdapter):
         self._sensor_id = sensor_id if sensor_id is not None else self.serial_device_path
 
         self.sensor = Pms7003Sensor(self.serial_device_path)
-    
+
+        self.logger.debug(f"Initialized {self.sensor_type} sensor. path: '{self.serial_device_path}', id: '{self.sensor_id}', category: '{self.sensor_category}', wakeup_time_seconds: '{self.wakeup_time_seconds}'")
+
     ## Properties
 
     @property
@@ -51,7 +55,7 @@ class PMS7003Driver(SensorAdapter):
         try:
             data = self.sensor.read()
         except PmsSensorException as e:
-            print(f'Unable to read {self.sensor_type} sensor data: {e}')
+            self.logger.exception(f"Unable to read sensor with type: '{self.sensor_type}' and id: '{self.sensor_id}'", exc_info=e)
             raise e
         finally:
             ## Put the sensor back to sleep, and shut off the fan

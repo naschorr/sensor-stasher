@@ -1,11 +1,16 @@
-from typing import Dict, Set, List
+import logging
+from typing import Set, List
 
 from .sensor_adapter import SensorAdapter
 from .sensor_datum import SensorDatum
 
+from utilities import initialize_logging
+
 
 class SensorManager:
     def __init__(self):
+        self.logger = initialize_logging(logging.getLogger(__name__))
+
         self.sensors: Set[SensorAdapter] = set()
 
 
@@ -23,7 +28,7 @@ class SensorManager:
                 data = await sensor.read()
             except Exception as e:
                 ## Don't let a single failed sensor read stop the rest
-                print(f"Unable to read from sensor '{sensor.sensor_type}-{sensor.sensor_id}': {e}")
+                self.logger.exception(f"Unable to read from sensor type: '{sensor.sensor_type}' with id: '{sensor.sensor_id}'", exc_info=e)
                 continue
 
             if (data is not None):

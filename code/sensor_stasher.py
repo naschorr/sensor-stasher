@@ -3,6 +3,7 @@ import os
 import subprocess
 import platform
 import uuid
+import logging
 from pathlib import Path
 
 from sensor.sensor_manager import SensorManager
@@ -13,11 +14,12 @@ from sensor.sensors.test_sensor.test_sensor_driver import TestSensorDriver
 from storage.storage_manager import StorageManager
 from storage.storage_adapter import StorageAdapter
 from storage.clients.influx.influxdb_client import InfluxDBClient
-from config import load_config
+from utilities import load_config, initialize_logging
 
 class SensorStasher:
     def __init__(self):
-        config = load_config(Path(__file__).parent)
+        config = load_config()
+        self.logger = initialize_logging(logging.getLogger(__name__))
 
         self.sensor_poll_interval_seconds: int = config.get('sensor_poll_interval_seconds')
         system_type = config.get('system_type')
@@ -28,6 +30,8 @@ class SensorStasher:
         self._loop = None
         self.sensor_manager: SensorManager = SensorManager()
         self.storage_manager: StorageManager = StorageManager(self.system_type, self.system_id)
+
+        self.logger.debug(f"Initialized SensorStasher with system type: '{self.system_type}', system id: '{self.system_id}', and sensor poll interval: '{self.sensor_poll_interval_seconds}' seconds.")
 
 
     def _get_system_id(self):
@@ -49,9 +53,12 @@ class SensorStasher:
 
     async def _process_sensor_data_loop(self):
         while (True):
+            self.logger.info("Starting sensor data processing loop")
             sensor_data = await self.sensor_manager.accumulate_all_sensor_data()
+            self.logger.debug(f"Retrieved data from {len(sensor_data)} sensor{'s' if len(sensor_data) != 1 else ''}.")
+
             self.storage_manager.store(sensor_data)
-            print(f"Stored {len(sensor_data)} sensor data points in the remote database")
+            self.logger.debug(f"Stored data from {len(sensor_data)} sensor{'s' if len(sensor_data) != 1 else ''}.")
 
             await asyncio.sleep(self.sensor_poll_interval_seconds)
 
@@ -73,11 +80,11 @@ class SensorStasher:
 
 if (__name__ == '__main__'):
     monitor = SensorStasher()
-    monitor.register_sensor(PMS7003Driver, None)
-    # monitor.register_sensor(TestSensorDriver, 'test_sensor_0')
-    # monitor.register_sensor(TestSensorDriver, 'test_sensor_1')
-    # monitor.register_sensor(TestSensorDriver, 'test_sensor_2')
-    # monitor.register_sensor(TestSensorDriver, 'test_sensor_3')
-    # monitor.register_sensor(TestSensorDriver, 'test_sensor_4')
+    # monitor.register_sensor(PMS7003Driver, None)
+    monitor.register_sensor(TestSensorDriver, 'test_sensor_0')
+    monitor.register_sensor(TestSensorDriver, 'test_sensor_1')
+    monitor.register_sensor(TestSensorDriver, 'test_sensor_2')
+    monitor.register_sensor(TestSensorDriver, 'test_sensor_3')
+    monitor.register_sensor(TestSensorDriver, 'test_sensor_4')
     monitor.register_storage(InfluxDBClient)
     monitor.start_monitoring()
