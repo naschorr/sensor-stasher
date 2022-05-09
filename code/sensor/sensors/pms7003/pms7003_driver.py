@@ -1,4 +1,4 @@
-import time
+import asyncio
 from pms7003 import Pms7003Sensor, PmsSensorException
 from pathlib import Path
 
@@ -13,7 +13,7 @@ class PMS7003Driver(SensorAdapter):
         config = load_config(Path(__file__).parent)
 
         self.serial_device_path = config.get('serial_device_path')
-        self.wakeup_time_seconds = config.get('wakeup_time_seconds')
+        self.wakeup_time_seconds: int = config.get('wakeup_time_seconds', 30)
         self._sensor_category = SensorCategories.AIR_QUALITY
         self._sensor_type = "PMS7003"
         self._sensor_id = sensor_id if sensor_id is not None else self.serial_device_path
@@ -45,7 +45,7 @@ class PMS7003Driver(SensorAdapter):
 
         ## Wake the sensor up and spin the fan to get air flowing, and wait for the sensor to move air around
         self.wakeup()
-        time.sleep(self.wakeup_time_seconds)
+        await asyncio.sleep(self.wakeup_time_seconds)
 
         ## Read the data from the sensor
         try:

@@ -2,6 +2,7 @@ import asyncio
 import os
 import subprocess
 import platform
+import uuid
 from pathlib import Path
 
 from sensor.sensor_manager import SensorManager
@@ -18,7 +19,7 @@ class SensorStasher:
     def __init__(self):
         config = load_config(Path(__file__).parent)
 
-        self.poll_interval_seconds: int = config.get('poll_interval_seconds')
+        self.sensor_poll_interval_seconds: int = config.get('sensor_poll_interval_seconds')
         system_type = config.get('system_type')
         self.system_type: str = system_type if system_type is not None else platform.platform()
         system_id = config.get('system_id')
@@ -34,8 +35,8 @@ class SensorStasher:
             ## Thanks to https://stackoverflow.com/a/66953913/1724602
             return str(subprocess.check_output('wmic csproduct get uuid'), 'utf-8').split('\n')[1].strip()
         else:
-            ## Thanks to https://stackoverflow.com/a/38328732/1724602
-            return subprocess.Popen('hal-get-property --udi /org/freedesktop/Hal/devices/computer --key system.hardware.uuid'.split())
+            ## Thanks to https://stackoverflow.com/a/41569262/1724602
+            return str(uuid.getnode())
 
 
     def register_sensor(self, sensor: SensorAdapter, sensor_id: str):
@@ -52,7 +53,7 @@ class SensorStasher:
             self.storage_manager.store(sensor_data)
             print(f"Stored {len(sensor_data)} sensor data points in the remote database")
 
-            await asyncio.sleep(self.poll_interval_seconds)
+            await asyncio.sleep(self.sensor_poll_interval_seconds)
 
 
     def start_monitoring(self):
@@ -72,7 +73,7 @@ class SensorStasher:
 
 if (__name__ == '__main__'):
     monitor = SensorStasher()
-    monitor.register_sensor(PMS7003Driver)
+    monitor.register_sensor(PMS7003Driver, None)
     # monitor.register_sensor(TestSensorDriver, 'test_sensor_0')
     # monitor.register_sensor(TestSensorDriver, 'test_sensor_1')
     # monitor.register_sensor(TestSensorDriver, 'test_sensor_2')
