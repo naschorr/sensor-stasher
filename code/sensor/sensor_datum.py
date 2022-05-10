@@ -15,7 +15,7 @@ class SensorDatum:
 
 
     def __str__(self) -> str:
-        return str(self.to_dict())
+        return str(self.__dict__)
 
 
     def to_dict(self) -> Dict:
