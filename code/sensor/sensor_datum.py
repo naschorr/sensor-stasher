@@ -19,7 +19,7 @@ class SensorDatum:
 
 
     def to_dict(self) -> Dict:
-        output = self.__dict__
+        output = self.__dict__.copy()
         ## Don't expose the metadata in the output dict to be stored in the database
         del output["metadata"]
 
