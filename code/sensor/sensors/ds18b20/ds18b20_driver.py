@@ -59,7 +59,12 @@ class DS18B20Driver(SensorAdapter):
             self._one_wire_device_path = value
         elif (type(value) is str):
             if (value[0] == "/"):
-                self._one_wire_device_path = Path("/").glob(value[1:])
+                try:
+                    ## todo: What happens if there are multiple one-wire devices? Is there a smart way to differentiate
+                    ## them programatically?
+                    self._one_wire_device_path = next(Path("/").glob(value[1:]))
+                except StopIteration:
+                    raise ValueError(f"Could not find path for '{value}'")
             else:
                 ## Can't glob off of a relative path, so just attempt to resolve it normally.
                 self._one_wire_device_path = Path(value)
