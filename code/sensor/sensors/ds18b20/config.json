@@ -1,0 +1,4 @@
+{
+    "one_wire_device_path": "/sys/bus/w1/devices/28-*/w1_slave",
+    "temperature_celcius_offset": null
+}
