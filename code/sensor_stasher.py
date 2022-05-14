@@ -8,6 +8,7 @@ from pathlib import Path
 
 from sensor.sensor_manager import SensorManager
 from sensor.sensor_adapter import SensorAdapter
+from sensor.sensors.ds18b20.ds18b20_driver import DS18B20Driver
 from sensor.sensors.pms7003.pms7003_driver import PMS7003Driver
 from sensor.sensors.test_sensor.test_sensor_driver import TestSensorDriver
 
@@ -80,6 +81,7 @@ class SensorStasher:
 
 if (__name__ == '__main__'):
     monitor = SensorStasher()
+    # monitor.register_sensor(DS18B20Driver, None)
     # monitor.register_sensor(PMS7003Driver, None)
     monitor.register_sensor(TestSensorDriver, 'test_sensor_0')
     monitor.register_sensor(TestSensorDriver, 'test_sensor_1')

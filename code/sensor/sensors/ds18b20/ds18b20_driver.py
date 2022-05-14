@@ -19,7 +19,7 @@ class DS18B20Driver(SensorAdapter):
 
         self._sensor_category = SensorCategories.TEMPERATURE
         self._sensor_type = "DS18B20"
-        self._sensor_id = sensor_id
+        self._sensor_id = sensor_id or self.one_wire_device_path.parent.name or self.one_wire_device_path
 
         ## Load relevant kernel modules for the sensor
         os.system("modprobe w1-gpio")
