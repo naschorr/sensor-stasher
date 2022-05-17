@@ -1,0 +1,12 @@
+[Unit]
+Description=Sensor Stasher as a Service (SSaaS?)
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/sensor-stasher/bin/python /usr/local/bin/sensor-stasher/code/sensor_stasher.py
+WorkingDirectory=/usr/local/bin/sensor-stasher/code
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=sysinit.target
