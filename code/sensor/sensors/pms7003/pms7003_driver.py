@@ -15,10 +15,12 @@ class PMS7003Driver(SensorAdapter):
         self.logger = initialize_logging(logging.getLogger(__name__))
 
         self.serial_device_path = config.get('serial_device_path')
+        assert (self.serial_device_path is not None)
         self.wakeup_time_seconds: int = config.get('wakeup_time_seconds', 30)
+
         self._sensor_category = SensorCategories.AIR_QUALITY
         self._sensor_type = "PMS7003"
-        self._sensor_id = sensor_id if sensor_id is not None else self.serial_device_path
+        self._sensor_id = sensor_id or self.serial_device_path
 
         self.sensor = Pms7003Sensor(self.serial_device_path)
 
