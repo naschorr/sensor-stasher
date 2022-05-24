@@ -35,13 +35,24 @@ class SensorStasher:
         self.logger.debug(f"Initialized SensorStasher with system type: '{self.system_type}', system id: '{self.system_id}', and sensor poll interval: '{self.sensor_poll_interval_seconds}' seconds.")
 
 
-    def _get_system_id(self):
-        if ('nt' in os.name):
-            ## Thanks to https://stackoverflow.com/a/66953913/1724602
-            return str(subprocess.check_output('wmic csproduct get uuid'), 'utf-8').split('\n')[1].strip()
-        else:
-            ## Thanks to https://stackoverflow.com/a/41569262/1724602
-            return str(uuid.getnode())
+    def _get_system_id(self) -> str:
+        system_id = None
+
+        try:
+            if ('nt' in os.name):
+                ## Thanks to https://stackoverflow.com/a/66953913/1724602
+                system_id = str(subprocess.check_output('wmic csproduct get uuid'), 'utf-8').split('\n')[1].strip()
+            else:
+                ## Thanks to https://stackoverflow.com/a/37775731/1724602
+                system_id = str(subprocess.check_output(['cat', '/var/lib/dbus/machine-id']), 'utf-8').strip()
+        except Exception as e:
+            self.logger.error(f"Error during retrieval of system id: {e}")
+        
+        if (system_id is None or len(system_id) == 0):
+            self.logger.warn("Unable to retrieve system id, using system's MAC address as fallback. Note that this may not be static or unique.")
+            system_id = str(uuid.getnode())
+
+        return system_id
 
 
     def register_sensor(self, sensor: SensorAdapter, sensor_id: str):
