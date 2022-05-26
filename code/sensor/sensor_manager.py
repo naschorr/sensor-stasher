@@ -32,6 +32,9 @@ class SensorManager:
                 continue
 
             if (data is not None):
-                sensor_data.append(data)
+                if (isinstance(data, list)):
+                    sensor_data.extend(data)
+                elif (isinstance(data, SensorDatum)):
+                    sensor_data.append(data)
 
         return sensor_data

@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Dict
+from typing import List
+
+from .sensor_datum import SensorDatum
 
 
 class SensorAdapter(ABC):
@@ -23,5 +25,5 @@ class SensorAdapter(ABC):
     ## Methods
 
     @abstractmethod
-    async def read(self) -> Dict:
+    async def read(self) -> List[SensorDatum]:
         pass
