@@ -26,7 +26,7 @@ class SensorManager:
             data = None
             try:
                 data = await sensor.read()
-                self.logger.debug(f"Read from {self.sensor_type} sensor with id: '{self.sensor_id}': {data}")
+                self.logger.debug(f"Read from {sensor.sensor_type} sensor with id: '{sensor.sensor_id}': {data}")
             except Exception as e:
                 ## Don't let a single failed sensor read stop the rest
                 self.logger.exception(f"Unable to read from sensor type: '{sensor.sensor_type}' with id: '{sensor.sensor_id}'", exc_info=e)

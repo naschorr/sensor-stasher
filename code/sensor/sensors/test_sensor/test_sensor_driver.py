@@ -9,7 +9,7 @@ class TestSensorDriver(SensorAdapter):
     def __init__(self, sensor_id: str):
         self._sensor_type = "TestSensor"
         self._sensor_id = sensor_id
-    
+
     ## Properties
 
     @property

@@ -8,4 +8,5 @@ class TestSensorDatum(SensorDatum):
     def __init__(self, sensor_type: str, sensor_id: str, measurement: Dict):
         super().__init__(DatumCategory.TEST, sensor_type, sensor_id)
 
+        self.name = measurement.get('name')
         self.test_key = measurement.get('test_key')
