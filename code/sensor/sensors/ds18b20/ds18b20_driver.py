@@ -46,7 +46,7 @@ class DS18B20Driver(SensorAdapter):
     @property
     def one_wire_device_path(self) -> Path:
         return self._one_wire_device_path
-    
+
 
     @one_wire_device_path.setter
     def one_wire_device_path(self, value):

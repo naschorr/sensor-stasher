@@ -57,12 +57,9 @@ class PMS7003Driver(SensorAdapter):
         finally:
             ## Put the sensor back to sleep, and shut off the fan
             self.sleep()
-        self.logger.debug(f"Read data from {self.sensor_type} sensor with id: '{self.sensor_id}': {data}")
-        
+
         ## Format and return the data
-        datum = PMS7003Datum(self.sensor_type, self.sensor_id, data)
-        self.logger.debug(f"Built datum from {self.sensor_type} sensor with id: '{self.sensor_id}': {datum}")
-        return [datum]
+        return [PMS7003Datum(self.sensor_type, self.sensor_id, data)]
 
     ## Methods
 
