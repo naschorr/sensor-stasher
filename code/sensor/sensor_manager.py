@@ -26,7 +26,6 @@ class SensorManager:
             data = None
             try:
                 data = await sensor.read()
-                self.logger.debug(f"Read from {sensor.sensor_type} sensor with id: '{sensor.sensor_id}': {data}")
             except Exception as e:
                 ## Don't let a single failed sensor read stop the rest
                 self.logger.exception(f"Unable to read from sensor type: '{sensor.sensor_type}' with id: '{sensor.sensor_id}'", exc_info=e)
@@ -35,7 +34,11 @@ class SensorManager:
             if (data is not None):
                 if (isinstance(data, list)):
                     sensor_data.extend(data)
+                    self.logger.debug(f"Read from {sensor.sensor_type} sensor with id: '{sensor.sensor_id}': {[datum.to_dict() for datum in data]}")
                 elif (isinstance(data, SensorDatum)):
                     sensor_data.append(data)
+                    self.logger.debug(f"Read from {sensor.sensor_type} sensor with id: '{sensor.sensor_id}': {data.to_dict()}")
+            else:
+                self.logger.warning(f"No data read from sensor type: '{sensor.sensor_type}' with id: '{sensor.sensor_id}'")
 
         return sensor_data
