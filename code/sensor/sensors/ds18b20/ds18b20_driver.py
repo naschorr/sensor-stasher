@@ -1,10 +1,10 @@
 import os
 import logging
 from pathlib import Path
+from typing import List
 
 from sensor.sensor_adapter import SensorAdapter
 from sensor.sensor_datum import SensorDatum
-from sensor.sensor_categories import SensorCategories
 from .ds18b20_datum import DS18B20Datum
 from utilities import load_config, initialize_logging
 
@@ -13,11 +13,11 @@ class DS18B20Driver(SensorAdapter):
         config = load_config(Path(__file__).parent)
         self.logger = initialize_logging(logging.getLogger(__name__))
 
+        ## Load config
         self.one_wire_device_path = config.get('one_wire_device_path')
         assert (self.one_wire_device_path is not None)
         self.temperature_celcius_offset = config.get('temperature_celcius_offset', 0.0)
 
-        self._sensor_category = SensorCategories.TEMPERATURE
         self._sensor_type = "DS18B20"
         self._sensor_id = sensor_id or self.one_wire_device_path.parent.name or self.one_wire_device_path
 
@@ -29,17 +29,12 @@ class DS18B20Driver(SensorAdapter):
         ## celcius, but will fix itself on the next read.
         self.read_one_wire_device_temperature_celcius()
 
-        self.logger.debug(f"Initialized {self.sensor_type} sensor. id: '{self.sensor_id}', category: '{self.sensor_category}'")
+        self.logger.debug(f"Initialized {self.sensor_type} sensor. id: '{self.sensor_id}'")
 
     ## Properties
 
     @property
-    def sensor_category(self) -> SensorCategories:
-        return self._sensor_category
-
-
-    @property
-    def sensor_type(self):
+    def sensor_type(self) -> str:
         return self._sensor_type
 
 
@@ -51,7 +46,7 @@ class DS18B20Driver(SensorAdapter):
     @property
     def one_wire_device_path(self) -> Path:
         return self._one_wire_device_path
-    
+
 
     @one_wire_device_path.setter
     def one_wire_device_path(self, value):
@@ -73,12 +68,14 @@ class DS18B20Driver(SensorAdapter):
 
     ## Adapter methods
 
-    async def read(self) -> SensorDatum:
+    async def read(self) -> List[SensorDatum]:
         temperature_celcius = self.read_one_wire_device_temperature_celcius()
 
-        return DS18B20Datum(self.sensor_category, self.sensor_type, self.sensor_id, {
-            "temperature_celcius": temperature_celcius + self.temperature_celcius_offset
-        })
+        return [
+            DS18B20Datum(self.sensor_type, self.sensor_id, {
+                "temperature_celcius": temperature_celcius + self.temperature_celcius_offset
+            })
+        ]
 
     ## Methods
 

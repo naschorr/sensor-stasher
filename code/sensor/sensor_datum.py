@@ -1,15 +1,15 @@
 import datetime
 from typing import Dict
 
-from sensor.sensor_categories import SensorCategories
+from sensor.datum_category import DatumCategory
 
 
 class SensorDatum:
-    def __init__(self, sensor_category: SensorCategories, sensor_type: str, sensor_id: str):
+    def __init__(self, category: DatumCategory, sensor_type: str, sensor_id: str):
         self.metadata = {
-            "sensor_category": sensor_category.value,
             "sensor_type": sensor_type,
             "sensor_id": sensor_id,
+            "category": category.value,
             "timestamp": datetime.datetime.now().isoformat()
         }
 
