@@ -1,5 +1,5 @@
 import logging
-from typing import Set, List
+from typing import List, Set
 
 from .sensor_adapter import SensorAdapter
 from .sensor_datum import SensorDatum
@@ -32,6 +32,13 @@ class SensorManager:
                 continue
 
             if (data is not None):
-                sensor_data.append(data)
+                if (isinstance(data, list)):
+                    sensor_data.extend(data)
+                    self.logger.debug(f"Read from {sensor.sensor_type} sensor with id: '{sensor.sensor_id}': {[datum.to_dict() for datum in data]}")
+                elif (isinstance(data, SensorDatum)):
+                    sensor_data.append(data)
+                    self.logger.debug(f"Read from {sensor.sensor_type} sensor with id: '{sensor.sensor_id}': {data.to_dict()}")
+            else:
+                self.logger.warning(f"No data read from sensor type: '{sensor.sensor_type}' with id: '{sensor.sensor_id}'")
 
         return sensor_data

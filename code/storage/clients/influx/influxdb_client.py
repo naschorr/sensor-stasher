@@ -12,7 +12,7 @@ class InfluxDBClient(StorageAdapter):
     def __init__(self, system_type: str, system_id: str):
         config = load_config(Path(__file__).parent)
         self.logger = initialize_logging(logging.getLogger(__name__))
-        
+
         self.url = config.get('url')
         self.api_token = config.get('api_token')
         self.organization = config.get('organization')
@@ -20,14 +20,23 @@ class InfluxDBClient(StorageAdapter):
         self.system_type = system_type
         self.system_id = system_id
 
+        self._storage_type = 'InfluxDB'
+
         self.client = influxdb_client.InfluxDBClient(url=self.url, token=self.api_token, org=self.organization)
         self.write_api = self.client.write_api(write_options=SYNCHRONOUS)
 
         self.logger.debug(f"Initialized InfluxDB client. url: '{self.url}', organization: '{self.organization}', bucket: '{self.bucket}'")
 
+    ## Properties
+
+    @property
+    def storage_type(self) -> str:
+        return self._storage_type
+
+    ## Methods
 
     def _build_points_from_data(self, data: SensorDatum) -> List[influxdb_client.Point]:
-        sensor_category = data.metadata.get('sensor_category')
+        category = data.metadata.get('category')
         sensor_type = data.metadata.get('sensor_type')
         sensor_id = data.metadata.get('sensor_id')
         timestamp = data.metadata.get('timestamp')
@@ -35,7 +44,7 @@ class InfluxDBClient(StorageAdapter):
         points: List[influxdb_client.Point] = []
 
         for key, value in data.to_dict().items():
-            point = influxdb_client.Point(sensor_category) \
+            point = influxdb_client.Point(category) \
                 .tag("system_type", self.system_type) \
                 .tag("system_id", self.system_id) \
                 .tag("sensor_type", sensor_type) \

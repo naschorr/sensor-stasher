@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class SensorCategories(Enum):
+class DatumCategory(Enum):
     AIR_QUALITY = "air_quality"
     TEMPERATURE = "temperature"
     HUMIDITY = "humidity"
