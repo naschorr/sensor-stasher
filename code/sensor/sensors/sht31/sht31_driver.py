@@ -17,6 +17,13 @@ from utilities import load_config, initialize_logging
 
 
 class SHT31Driver(SensorAdapter):
+    '''
+    Simple interface for the SHT31 temperature and humidity sensor.
+
+    See the datasheet for more information:
+    https://sensirion.com/media/documents/213E6A3B/61641DC3/Sensirion_Humidity_Sensors_SHT3x_Datasheet_digital.pdf
+    '''
+
     def __init__(self, sensor_id: str):
         config = load_config(Path(__file__).parent)
         self.logger = initialize_logging(logging.getLogger(__name__))
@@ -51,10 +58,8 @@ class SHT31Driver(SensorAdapter):
 
     def _read_sht3x_data(self) -> List[bytes]:
         '''
-        Handles sht35x communications according to the datasheet:
-        https://sensirion.com/media/documents/213E6A3B/61641DC3/Sensirion_Humidity_Sensors_SHT3x_Datasheet_digital.pdf
-
-        Note that this is doing single-shot measurement, not continuous measurement.
+        Handles sht3x communications according to the datasheet. Note that this method does one single-shot
+        measurement, not a continous series of measurements.
         '''
 
         ## Initiate single-shot measurement
@@ -68,11 +73,19 @@ class SHT31Driver(SensorAdapter):
 
 
     def _extract_temperature_celcius_from_bytes(self, data: List[bytes]) -> float:
-        return -45 + (175 * (data[0] * 256 + data[1]) / 65535.0)
+        temperature_msb = data[0]
+        temperature_lsb = data[1]
+
+        ## Formula provided by the datasheet
+        return -45 + (175 * (temperature_msb * 256 + temperature_lsb) / 65535.0)
 
 
     def _extract_humidity_relative_from_bytes(self, data: List[bytes]) -> float:
-        return 100 * (data[3] * 256 + data[4]) / 65535.0
+        humidity_msb = data[3]
+        humidity_lsb = data[4]
+
+        ## Formula provided by the datasheet
+        return 100 * ((humidity_msb * 256 + humidity_lsb) / 65535.0)
 
     ## Adapter methods
 
@@ -80,6 +93,9 @@ class SHT31Driver(SensorAdapter):
         '''
         Handles the process of initializing the sensor, reading the temperature and humidity data, and formatting it
         into SensorDatum objects, and returning the sensor to an idle state.
+
+        Note that one call to this method returns two datums, one for the temperature, and one for the humidity.
+        Separating them helps in later classification, as they can be queried independently from one another.
         '''
 
         try:
