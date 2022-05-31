@@ -15,10 +15,19 @@ class SensorManager:
 
 
     def register_sensor(self, sensor: SensorAdapter, sensor_id: str):
-        self.sensors.add(sensor(sensor_id))
+        try:
+            instantiated_sensor = sensor(sensor_id)
+        except Exception as e:
+            self.logger.error(f"Unable to instantiate sensor: {sensor.__name__} with id: {sensor_id}", exc_info=e)
+            return
+
+        self.sensors.add(instantiated_sensor)
 
 
     async def accumulate_all_sensor_data(self) -> List[SensorDatum]:
+        if (len(self.sensors) == 0):
+            raise RuntimeError("No sensors registered, cannot accumulate any data!")
+
         sensor_data = []
 
         sensor: SensorAdapter

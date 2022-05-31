@@ -13,6 +13,7 @@ class StorageManager:
 
 
     def register_storage(self, storage: StorageAdapter):
+        ## todo: similar sensor registration exception handling once multiple storage endpoints are supported
         self.storage = storage(self.system_type, self.system_id)
 
 
