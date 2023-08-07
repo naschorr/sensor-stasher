@@ -4,6 +4,7 @@ import json
 import logging
 import datetime
 import os
+import platform
 from pathlib import Path
 from logging.handlers import TimedRotatingFileHandler
 
@@ -115,3 +116,17 @@ def initialize_logging(logger):
         logger.info("Removed previous log file.")
 
     return logger
+
+
+def validate_system(wrapped):
+    """
+    Simple decorator to ensure that sub-methods will only run on supported systems.
+    Right now, only the RaspberryPi is supported.
+    """
+
+    def wrapper(self):
+        if (platform.uname().node != "raspberrypi"):
+            raise NotImplementedError("Only RaspberryPi is supported at this time.")
+        wrapped(self)
+
+    return wrapper

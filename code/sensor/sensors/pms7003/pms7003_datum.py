@@ -1,7 +1,7 @@
 from typing import Dict
 
-from sensor.sensor_datum import SensorDatum
-from sensor.datum_category import DatumCategory
+from sensor.models.sensor_datum import SensorDatum
+from sensor.models.datum_category import DatumCategory
 
 
 class PMS7003Datum(SensorDatum):

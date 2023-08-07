@@ -1,7 +1,7 @@
 import datetime
 from typing import Dict
 
-from sensor.datum_category import DatumCategory
+from sensor.models.datum_category import DatumCategory
 
 
 class SensorDatum:

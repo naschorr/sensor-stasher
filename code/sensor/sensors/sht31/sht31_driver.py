@@ -1,22 +1,15 @@
 import logging
-import sys
 import time
 from pathlib import Path
 from typing import List
 
-## The recommended Raspberry Pi i2c library doesn't play nice with Windows
-## Eventually, with proper orchestration, this check won't be necessary as module will be spun up on demand via
-## importlib, and init can be a bit more clever about modules, their capabilities, and their requirements.
-if (sys.platform.startswith('linux')):
-    import smbus
-
-from sensor.sensor_adapter import SensorAdapter
-from sensor.sensor_datum import SensorDatum
+from sensor.sensor_types.i2c.i2c_sensor import I2CSensor
+from sensor.models.sensor_datum import SensorDatum
 from .sht31_datum import SHT31TemperatureDatum, SHT31HumidityDatum
 from utilities import load_config, initialize_logging
 
 
-class SHT31Driver(SensorAdapter):
+class SHT31Driver(I2CSensor):
     '''
     Simple interface for the SHT31 temperature and humidity sensor.
 
@@ -36,10 +29,11 @@ class SHT31Driver(SensorAdapter):
         self.temperature_celcius_offset = config.get('temperature_celcius_offset', 0.0)
         self.humidity_relative_offset = config.get('humidity_relative_offset', 0.0)
 
+        ## Init the i2c sensor
+        super().__init__(self.i2c_bus, self.i2c_address)
+
         self._sensor_type = "SHT31"
         self._sensor_id = sensor_id or f"{self.i2c_bus}-{self.i2c_address}"
-
-        self.bus = smbus.SMBus(self.i2c_bus)
 
         self.logger.debug(f"Initialized {self.sensor_type} sensor. id: {self.sensor_id}, i2c_bus: {self.i2c_bus}, i2c_address: {self.i2c_address}")
 
@@ -102,7 +96,7 @@ class SHT31Driver(SensorAdapter):
             data = self._read_sht3x_data()
         except Exception as e:
             self.logger.error(f"Failed to interact with {self.sensor_type} - {self.sensor_id} over i2c. {e}")
-            return None
+            return []
 
         temperature_datum = SHT31TemperatureDatum(self.sensor_type, self.sensor_id, {
             "temperature_celcius": self._extract_temperature_celcius_from_bytes(data) + self.temperature_celcius_offset
