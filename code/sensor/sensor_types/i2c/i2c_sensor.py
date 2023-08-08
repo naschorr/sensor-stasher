@@ -7,7 +7,7 @@ import contextlib
 ## Eventually, with proper orchestration, this check won't be necessary as module will be spun up on demand via
 ## importlib, and init can be a bit more clever about modules, their capabilities, and their requirements.
 if (platform.uname().node.startswith('linux')):
-    import smbus
+    import smbus2
 
 from sensor.sensors.sensor_adapter import SensorAdapter
 from sensor.exceptions.device_in_use_exception import DeviceInUseException
@@ -44,7 +44,7 @@ class I2CSensor(SensorAdapter):
             self.logger.error(f"Unable to register i2c sensor, device already in use. {e}")
             return
 
-        self.bus = smbus.SMBus(i2c_bus)
+        self.bus = smbus2.SMBus(i2c_bus)
 
     ## Methods
 
