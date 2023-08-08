@@ -9,7 +9,7 @@ import contextlib
 if (platform.uname().node.startswith('linux')):
     import smbus2
 
-from sensor.sensors.sensor_adapter import SensorAdapter
+from sensor.sensor_adapter import SensorAdapter
 from sensor.exceptions.device_in_use_exception import DeviceInUseException
 from utilities import initialize_logging, validate_system
 

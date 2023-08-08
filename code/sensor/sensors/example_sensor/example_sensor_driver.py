@@ -1,6 +1,6 @@
 from typing import List
 
-from sensor.sensors.sensor_adapter import SensorAdapter
+from sensor.sensor_adapter import SensorAdapter
 from sensor.models.sensor_datum import SensorDatum
 from .example_sensor_datum import ExampleSensorDatum
 

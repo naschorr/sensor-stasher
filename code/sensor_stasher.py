@@ -6,8 +6,8 @@ import uuid
 import logging
 from datetime import datetime, timedelta
 
-from sensor.sensors.sensor_manager import SensorManager
-from sensor.sensors.sensor_adapter import SensorAdapter
+from sensor.sensor_manager import SensorManager
+from sensor.sensor_adapter import SensorAdapter
 from sensor.sensors.ds18b20.ds18b20_driver import DS18B20Driver
 from sensor.sensors.pms7003.pms7003_driver import PMS7003Driver
 from sensor.sensors.sht31.sht31_driver import SHT31Driver
