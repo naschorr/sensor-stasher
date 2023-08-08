@@ -67,19 +67,19 @@ class SHT31Driver(I2CSensor):
 
 
     def _extract_temperature_celcius_from_bytes(self, data: List[bytes]) -> float:
-        temperature_msb = data[0]
-        temperature_lsb = data[1]
+        temperature_msb_int = int.from_bytes(data[0], byteorder='big')
+        temperature_lsb_int = int.from_bytes(data[1], byteorder='big')
 
         ## Formula provided by the datasheet
-        return -45 + (175 * (temperature_msb * 256 + temperature_lsb) / 65535.0)
+        return -45 + (175 * (temperature_msb_int * 256 + temperature_lsb_int) / 65535.0)
 
 
     def _extract_humidity_relative_from_bytes(self, data: List[bytes]) -> float:
-        humidity_msb = data[3]
-        humidity_lsb = data[4]
+        humidity_msb_int = int.from_bytes(data[3], byteorder='big')
+        humidity_lsb_int = int.from_bytes(data[4], byteorder='big')
 
         ## Formula provided by the datasheet
-        return 100 * ((humidity_msb * 256 + humidity_lsb) / 65535.0)
+        return 100 * ((humidity_msb_int * 256 + humidity_lsb_int) / 65535.0)
 
     ## Adapter methods
 
