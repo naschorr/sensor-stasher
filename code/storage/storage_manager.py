@@ -1,6 +1,6 @@
 from typing import List
 
-from sensor.sensor_datum import SensorDatum
+from sensor.models.sensor_datum import SensorDatum
 from storage.storage_adapter import StorageAdapter
 
 class StorageManager:

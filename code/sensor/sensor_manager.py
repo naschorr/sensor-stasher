@@ -1,8 +1,8 @@
 import logging
 from typing import List, Set
 
-from .sensor_adapter import SensorAdapter
-from .sensor_datum import SensorDatum
+from sensor.sensor_adapter import SensorAdapter
+from sensor.models.sensor_datum import SensorDatum
 
 from utilities import initialize_logging
 
@@ -31,14 +31,16 @@ class SensorManager:
                 self.logger.exception(f"Unable to read from sensor type: '{sensor.sensor_type}' with id: '{sensor.sensor_id}'", exc_info=e)
                 continue
 
-            if (data is not None):
-                if (isinstance(data, list)):
-                    sensor_data.extend(data)
-                    self.logger.debug(f"Read from {sensor.sensor_type} sensor with id: '{sensor.sensor_id}': {[datum.to_dict() for datum in data]}")
-                elif (isinstance(data, SensorDatum)):
-                    sensor_data.append(data)
-                    self.logger.debug(f"Read from {sensor.sensor_type} sensor with id: '{sensor.sensor_id}': {data.to_dict()}")
-            else:
+            ## Process the data (or lack thereof) returned from the sensor
+            if (data is None):
                 self.logger.warning(f"No data read from sensor type: '{sensor.sensor_type}' with id: '{sensor.sensor_id}'")
+                continue
+
+            if (isinstance(data, list)):
+                sensor_data.extend(data)
+                self.logger.debug(f"Read from {sensor.sensor_type} sensor with id: '{sensor.sensor_id}': {[datum.to_dict() for datum in data]}")
+            elif (isinstance(data, SensorDatum)):
+                sensor_data.append(data)
+                self.logger.debug(f"Read from {sensor.sensor_type} sensor with id: '{sensor.sensor_id}': {data.to_dict()}")
 
         return sensor_data

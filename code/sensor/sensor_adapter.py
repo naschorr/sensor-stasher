@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from .sensor_datum import SensorDatum
+from sensor.models.sensor_datum import SensorDatum
 
 
 class SensorAdapter(ABC):

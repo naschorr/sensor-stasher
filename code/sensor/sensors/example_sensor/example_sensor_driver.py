@@ -1,13 +1,17 @@
 from typing import List
 
 from sensor.sensor_adapter import SensorAdapter
-from sensor.sensor_datum import SensorDatum
-from .test_sensor_datum import TestSensorDatum
+from sensor.models.sensor_datum import SensorDatum
+from .example_sensor_datum import ExampleSensorDatum
 
 
-class TestSensorDriver(SensorAdapter):
+class ExampleSensorDriver(SensorAdapter):
+    """
+    Simple, system agnostic sensor driver for testing basic functionality without a Raspberry Pi
+    """
+
     def __init__(self, sensor_id: str):
-        self._sensor_type = "TestSensor"
+        self._sensor_type = "ExampleSensor"
         self._sensor_id = sensor_id
 
     ## Properties
@@ -26,7 +30,7 @@ class TestSensorDriver(SensorAdapter):
     async def read(self) -> List[SensorDatum]:
         data = {
             'name': f"{self.sensor_type}-{self.sensor_id}",
-            'test_key': 'test_value'
+            'example_key': 'example_value'
         }
 
-        return TestSensorDatum(self.sensor_type, self.sensor_id, data)
+        return ExampleSensorDatum(self.sensor_type, self.sensor_id, data)

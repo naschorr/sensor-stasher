@@ -11,7 +11,7 @@ from sensor.sensor_adapter import SensorAdapter
 from sensor.sensors.ds18b20.ds18b20_driver import DS18B20Driver
 from sensor.sensors.pms7003.pms7003_driver import PMS7003Driver
 from sensor.sensors.sht31.sht31_driver import SHT31Driver
-from sensor.sensors.test_sensor.test_sensor_driver import TestSensorDriver
+from sensor.sensors.example_sensor.example_sensor_driver import ExampleSensorDriver
 
 from storage.storage_manager import StorageManager
 from storage.storage_adapter import StorageAdapter
@@ -107,9 +107,11 @@ class SensorStasher:
 
 
     def stop_monitoring(self):
-        self._loop.stop()
-        self._loop.close()
-        self._loop = None
+        ## Make sure we've got an event loop to stop
+        if (self._loop is not None):
+            self._loop.stop()
+            self._loop.close()
+            self._loop = None
 
 
 if (__name__ == '__main__'):
@@ -117,10 +119,10 @@ if (__name__ == '__main__'):
     # monitor.register_sensor(DS18B20Driver, None)
     # monitor.register_sensor(PMS7003Driver, None)
     # monitor.register_sensor(SHT31Driver, None)
-    monitor.register_sensor(TestSensorDriver, 'test_sensor_0')
-    monitor.register_sensor(TestSensorDriver, 'test_sensor_1')
-    monitor.register_sensor(TestSensorDriver, 'test_sensor_2')
-    monitor.register_sensor(TestSensorDriver, 'test_sensor_3')
-    monitor.register_sensor(TestSensorDriver, 'test_sensor_4')
+    monitor.register_sensor(ExampleSensorDriver, 'example_sensor_0')
+    monitor.register_sensor(ExampleSensorDriver, 'example_sensor_1')
+    monitor.register_sensor(ExampleSensorDriver, 'example_sensor_2')
+    monitor.register_sensor(ExampleSensorDriver, 'example_sensor_3')
+    monitor.register_sensor(ExampleSensorDriver, 'example_sensor_4')
     monitor.register_storage(InfluxDBClient)
     monitor.start_monitoring()
