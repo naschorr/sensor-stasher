@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from logging.handlers import TimedRotatingFileHandler
 
-from utilities import *
+from utilities.utilities import load_config, get_root_path
 from .log_level import LogLevel
 
 

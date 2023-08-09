@@ -8,7 +8,7 @@ from typing import Optional
 CONFIG_NAME = "config.json"	            # The name of the config file
 DEV_CONFIG_NAME = "config.dev.json"     # The name of the dev config file (overrides properties stored in the normal and prod config files)
 PROD_CONFIG_NAME = "config.prod.json"   # The name of the prod config file (overrides properties stored in the normal config file)
-DIRS_FROM_ROOT = 1			            # How many directories away this script is from the root
+DIRS_FROM_ROOT = 2			            # How many directories away this script is from the root
 
 
 def get_root_path() -> Path:
