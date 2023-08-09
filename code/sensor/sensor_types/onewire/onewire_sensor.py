@@ -5,7 +5,8 @@ import contextlib
 
 from sensor.sensor_adapter import SensorAdapter
 from sensor.exceptions.device_in_use_exception import DeviceInUseException
-from utilities import initialize_logging, validate_system
+from utilities.utilities import validate_system
+from utilities.logging.logging import Logging
 
 
 class OneWireSensor(SensorAdapter):
@@ -17,7 +18,7 @@ class OneWireSensor(SensorAdapter):
     ## Lifecycle
 
     def __init__(self, onewire_device_path: Path):
-        self.logger = initialize_logging(logging.getLogger(__name__))
+        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
         ## Verify that 1-wire is available
         if (not self.get_onewire_state()):

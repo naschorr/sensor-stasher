@@ -5,15 +5,16 @@ from pathlib import Path
 from typing import List
 
 from sensor.sensor_types.serial.serial_sensor import SerialSensor
-from sensor.models.sensor_datum import SensorDatum
+from models.datum.sensor_datum import SensorDatum
 from .pms7003_datum import PMS7003Datum
-from utilities import load_config, initialize_logging
+from utilities.utilities import load_config
+from utilities.logging.logging import Logging
 
 
 class PMS7003Driver(SerialSensor):
     def __init__(self, sensor_id: str):
         config = load_config(Path(__file__).parent)
-        self.logger = initialize_logging(logging.getLogger(__name__))
+        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
         ## Load config
         self.serial_device_path = config.get('serial_device_path')

@@ -1,8 +1,8 @@
 from pydantic import ConfigDict, Field
 
 from sensor.sensor_types.i2c.i2c_sensor_config import I2CSensorConfig
-from sensor.models.data.temperature_sensor_config import TemperatureSensorConfig
-from sensor.models.data.humidity_sensor_config import HumiditySensorConfig
+from sensor.models.config.data_type.temperature_sensor_config import TemperatureSensorConfig
+from sensor.models.config.data_type.humidity_sensor_config import HumiditySensorConfig
 
 
 class SHT31Config(I2CSensorConfig, TemperatureSensorConfig, HumiditySensorConfig):

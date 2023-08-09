@@ -5,13 +5,15 @@ import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 from storage.storage_adapter import StorageAdapter
-from sensor.models.sensor_datum import SensorDatum
-from utilities import load_config, initialize_logging
+from models.datum.sensor_datum import SensorDatum
+from utilities.utilities import load_config
+from utilities.logging.logging import Logging
+
 
 class InfluxDBClient(StorageAdapter):
     def __init__(self, system_type: str, system_id: str):
         config = load_config(Path(__file__).parent)
-        self.logger = initialize_logging(logging.getLogger(__name__))
+        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
         self.url = config.get('url')
         self.api_token = config.get('api_token')

@@ -4,14 +4,16 @@ from pathlib import Path
 from typing import List
 
 from sensor.sensor_types.onewire.onewire_sensor import OneWireSensor
-from sensor.models.sensor_datum import SensorDatum
+from models.datum.sensor_datum import SensorDatum
 from .ds18b20_datum import DS18B20Datum
-from utilities import load_config, initialize_logging
+from utilities.utilities import load_config
+from utilities.logging.logging import Logging
+
 
 class DS18B20Driver(OneWireSensor):
     def __init__(self, sensor_id: str):
         config = load_config(Path(__file__).parent)
-        self.logger = initialize_logging(logging.getLogger(__name__))
+        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
         ## Load config
         self.one_wire_device_path = config.get('one_wire_device_path')

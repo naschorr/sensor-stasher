@@ -4,9 +4,10 @@ from pathlib import Path
 from typing import List
 
 from sensor.sensor_types.i2c.i2c_sensor import I2CSensor
-from sensor.models.sensor_datum import SensorDatum
+from models.datum.sensor_datum import SensorDatum
 from .sht31_datum import SHT31TemperatureDatum, SHT31HumidityDatum
-from utilities import load_config, initialize_logging
+from utilities.utilities import load_config
+from utilities.logging.logging import Logging
 
 
 class SHT31Driver(I2CSensor):
@@ -19,7 +20,7 @@ class SHT31Driver(I2CSensor):
 
     def __init__(self, sensor_id: str):
         config = load_config(Path(__file__).parent)
-        self.logger = initialize_logging(logging.getLogger(__name__))
+        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
         ## Load config
         self.i2c_bus = int(config.get('i2c_bus', 1))

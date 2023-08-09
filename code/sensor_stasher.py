@@ -17,13 +17,14 @@ from storage.storage_manager import StorageManager
 from storage.storage_adapter import StorageAdapter
 from storage.clients.influx.influxdb_client import InfluxDBClient
 
-from utilities import load_config, initialize_logging
+from utilities.utilities import load_config
+from utilities.logging.logging import Logging
 
 
 class SensorStasher:
     def __init__(self):
         config = load_config()
-        self.logger = initialize_logging(logging.getLogger(__name__))
+        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
         self.sensor_poll_interval_seconds: int = config.get('sensor_poll_interval_seconds')
         system_type = config.get('system_type')
