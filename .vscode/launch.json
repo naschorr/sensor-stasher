@@ -17,6 +17,20 @@
             "debugOptions": [
                 "RedirectOutput"
             ]
+        },
+        {
+            "name": "SchemaGenerator",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": false,
+            "python": "${workspaceFolder}/Scripts/python.exe",
+            "program": "${workspaceFolder}/code/schema_generator.py",
+            "cwd": "${workspaceFolder}/code",
+            "env": {},
+            "justMyCode": false,
+            "debugOptions": [
+                "RedirectOutput"
+            ]
         }
     ]
 }
