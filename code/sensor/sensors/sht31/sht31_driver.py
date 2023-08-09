@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List
 
 from sensor.sensor_types.i2c.i2c_sensor import I2CSensor
-from models.datum.sensor_datum import SensorDatum
+from sensor.models.datum.sensor_datum import SensorDatum
 from .sht31_datum import SHT31TemperatureDatum, SHT31HumidityDatum
 from utilities.utilities import load_config
 from utilities.logging.logging import Logging

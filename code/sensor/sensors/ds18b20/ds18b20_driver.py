@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List
 
 from sensor.sensor_types.onewire.onewire_sensor import OneWireSensor
-from models.datum.sensor_datum import SensorDatum
+from sensor.models.datum.sensor_datum import SensorDatum
 from .ds18b20_datum import DS18B20Datum
 from utilities.utilities import load_config
 from utilities.logging.logging import Logging
