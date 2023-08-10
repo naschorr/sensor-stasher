@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List
 
 from sensor.sensor_types.serial.serial_sensor import SerialSensor
-from sensor.models.datum.sensor_datum import SensorDatum
+from sensor.models.data.sensor_datum import SensorDatum
 from .pms7003_datum import PMS7003Datum
 from utilities.configuration import Configuration
 from utilities.logging.logging import Logging

@@ -1,11 +1,11 @@
 import datetime
 from typing import Dict
 
-from .datum_category import DatumCategory
+from sensor.models.data.data_type.data_type import DataType
 
 
 class SensorDatum:
-    def __init__(self, category: DatumCategory, sensor_type: str, sensor_id: str):
+    def __init__(self, category: DataType, sensor_type: str, sensor_id: str):
         self.metadata = {
             "sensor_type": sensor_type,
             "sensor_id": sensor_id,

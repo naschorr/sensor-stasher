@@ -6,7 +6,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 
 from storage.storage_adapter import StorageAdapter
 from storage.models.storage_type import StorageType
-from sensor.models.datum.sensor_datum import SensorDatum
+from sensor.models.data.sensor_datum import SensorDatum
 from utilities.configuration import Configuration
 from utilities.logging.logging import Logging
 
