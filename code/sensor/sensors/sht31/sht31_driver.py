@@ -6,7 +6,7 @@ from typing import List
 from sensor.sensor_types.i2c.i2c_sensor import I2CSensor
 from sensor.models.datum.sensor_datum import SensorDatum
 from .sht31_datum import SHT31TemperatureDatum, SHT31HumidityDatum
-from utilities.utilities import load_config
+from utilities.configuration import Configuration
 from utilities.logging.logging import Logging
 
 
@@ -19,16 +19,15 @@ class SHT31Driver(I2CSensor):
     '''
 
     def __init__(self, sensor_id: str):
-        config = load_config(Path(__file__).parent)
         self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
         ## Load config
-        self.i2c_bus = int(config.get('i2c_bus', 1))
-        assert (self.i2c_bus is not None)
-        self.i2c_address = int(config.get('i2c_address', "0x44"), base=16)
-        assert (self.i2c_address is not None)
-        self.temperature_celcius_offset = config.get('temperature_celcius_offset', 0.0)
-        self.humidity_relative_offset = config.get('humidity_relative_offset', 0.0)
+        configuration = Configuration.load_configuration().sht31
+        assert (configuration is not None)
+        self.i2c_bus = configuration.i2c_bus
+        self.i2c_address = int(configuration.i2c_address, base=16)
+        self.temperature_celcius_offset = configuration.temperature_celcius_offset
+        self.humidity_relative_offset = configuration.humidity_relative_offset
 
         ## Init the i2c sensor
         super().__init__(self.i2c_bus, self.i2c_address)

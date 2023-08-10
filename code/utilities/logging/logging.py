@@ -4,20 +4,21 @@ import os
 from pathlib import Path
 from logging.handlers import TimedRotatingFileHandler
 
-from utilities.utilities import load_config, get_root_path
+from utilities.configuration import Configuration
+from utilities.utilities import get_root_path
 from .log_level import LogLevel
 
 
 class Logging:
     @staticmethod
     def initialize_logging(logger):
-        config = load_config()
+        config = Configuration.load_configuration()
 
         FORMAT = "%(asctime)s - %(module)s - %(funcName)s - %(levelname)s - %(message)s"
         formatter = logging.Formatter(FORMAT)
         logging.basicConfig(format=FORMAT)
 
-        log_level = str(config.get("log_level", LogLevel.DEBUG)).lower()
+        log_level = config.log_level
         if (log_level == LogLevel.DEBUG):
             logger.setLevel(logging.DEBUG)
         elif (log_level == LogLevel.INFO):
@@ -32,7 +33,7 @@ class Logging:
             logger.setLevel(logging.DEBUG)
 
         ## Get the directory containing the logs and make sure it exists, creating it if it doesn't
-        log_path = config.get("log_path")
+        log_path = config.log_path
         if (log_path):
             log_path = Path(log_path)
         else:
@@ -52,7 +53,7 @@ class Logging:
                 removed_previous_logs = True
 
         ## Setup and add the timed rotating log handler to the logger
-        backup_count = config.get("log_backup_count", 7)    # Store a week's logs then start overwriting them
+        backup_count = config.log_backup_count  # Store a week's logs then start overwriting them
         log_handler = TimedRotatingFileHandler(str(log_file), when='midnight', interval=1, backupCount=backup_count)
         log_handler.setFormatter(formatter)
         logger.addHandler(log_handler)
