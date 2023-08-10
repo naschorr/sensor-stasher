@@ -10,11 +10,13 @@ from sensor.sensors.sht31.sht31_config import SHT31Config
 
 class SensorStasherConfig(BaseModel):
     ## SensorStasher Configuration
-    system_type: str = Field(
+    system_type: Optional[str] = Field(
+        default=None,
         description="The type of system this sensor is running on.",
         examples=["Raspberry Pi Zero 2 W", "Raspberry Pi 4 Model B", "Raspberry Pi 2 Model B"]
     )
-    system_id: str = Field(
+    system_id: Optional[str] = Field(
+        default=None,
         description="The unique ID of the system this sensor is running on.",
         examples=["Living Room", "Bedroom", "Office 0", "Office 1"]
     )
