@@ -5,6 +5,7 @@ import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 from storage.storage_adapter import StorageAdapter
+from storage.models.storage_type import StorageType
 from sensor.models.datum.sensor_datum import SensorDatum
 from utilities.configuration import Configuration
 from utilities.logging.logging import Logging
@@ -24,7 +25,7 @@ class InfluxDBClient(StorageAdapter):
 
         self.system_type = system_type
         self.system_id = system_id
-        self._storage_type = 'InfluxDB'
+        self._storage_type = StorageType.INFLUXDB
 
         self.client = influxdb_client.InfluxDBClient(url=self.url, token=self.api_token, org=self.organization)
         self.write_api = self.client.write_api(write_options=SYNCHRONOUS)
@@ -34,7 +35,7 @@ class InfluxDBClient(StorageAdapter):
     ## Properties
 
     @property
-    def storage_type(self) -> str:
+    def storage_type(self) -> StorageType:
         return self._storage_type
 
     ## Methods
