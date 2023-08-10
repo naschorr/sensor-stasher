@@ -4,6 +4,7 @@ from pathlib import Path
 import contextlib
 
 from sensor.sensor_adapter import SensorAdapter
+from sensor.models.sensor_type import SensorType
 from sensor.exceptions.device_in_use_exception import DeviceInUseException
 from utilities.utilities import validate_system
 from utilities.logging.logging import Logging
@@ -36,6 +37,12 @@ class SerialSensor(SensorAdapter):
         except DeviceInUseException as e:
             self.logger.error(f"Unable to register serial sensor, device already in use. {e}")
             return
+
+    ## Properties
+
+    @property
+    def sensor_type(self) -> SensorType:
+        return SensorType.SERIAL
 
     ## Methods
 

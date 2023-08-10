@@ -20,7 +20,7 @@ class DS18B20Driver(OneWireSensor):
         assert (self.one_wire_device_path is not None)
         self.temperature_celcius_offset = config.get('temperature_celcius_offset', 0.0)
 
-        self._sensor_type = "DS18B20"
+        self._sensor_name = "DS18B20"
         self._sensor_id = sensor_id or self.one_wire_device_path.parent.name or self.one_wire_device_path
 
         ## Load the 1-wire temperature sensor kernel module
@@ -35,8 +35,8 @@ class DS18B20Driver(OneWireSensor):
     ## Properties
 
     @property
-    def sensor_type(self) -> str:
-        return self._sensor_type
+    def sensor_name(self) -> str:
+        return self._sensor_name
 
 
     @property

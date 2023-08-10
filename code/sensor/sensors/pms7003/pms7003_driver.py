@@ -24,7 +24,7 @@ class PMS7003Driver(SerialSensor):
         ## Init the serial sensor
         super().__init__(self.serial_device_path)
 
-        self._sensor_type = "PMS7003"
+        self._sensor_name = "PMS7003"
         self._sensor_id = sensor_id or self.serial_device_path
 
         self.sensor = Pms7003Sensor(self.serial_device_path)
@@ -34,8 +34,8 @@ class PMS7003Driver(SerialSensor):
     ## Properties
 
     @property
-    def sensor_type(self) -> str:
-        return self._sensor_type
+    def sensor_name(self) -> str:
+        return self._sensor_name
 
 
     @property

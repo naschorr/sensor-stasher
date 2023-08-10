@@ -10,6 +10,7 @@ if (platform.uname().node.startswith('linux')):
     import smbus2
 
 from sensor.sensor_adapter import SensorAdapter
+from sensor.models.sensor_type import SensorType
 from sensor.exceptions.device_in_use_exception import DeviceInUseException
 from utilities.utilities import validate_system
 from utilities.logging.logging import Logging
@@ -46,6 +47,12 @@ class I2CSensor(SensorAdapter):
             return
 
         self.bus = smbus2.SMBus(i2c_bus)
+
+    ## Properties
+
+    @property
+    def sensor_type(self) -> SensorType:
+        return SensorType.I2C
 
     ## Methods
 

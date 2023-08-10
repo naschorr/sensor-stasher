@@ -4,6 +4,7 @@ from pathlib import Path
 import contextlib
 
 from sensor.sensor_adapter import SensorAdapter
+from sensor.models.sensor_type import SensorType
 from sensor.exceptions.device_in_use_exception import DeviceInUseException
 from utilities.utilities import validate_system
 from utilities.logging.logging import Logging
@@ -41,6 +42,12 @@ class OneWireSensor(SensorAdapter):
         ## Note that you may need to load additional modules in specific drivers (ex: w1-therm for the DS18B20
         ## temperature sensor)
         os.system("modprobe w1-gpio")
+
+    ## Properties
+
+    @property
+    def sensor_type(self) -> SensorType:
+        return SensorType.ONEWIRE
 
     ## Methods
 

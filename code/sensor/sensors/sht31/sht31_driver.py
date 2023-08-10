@@ -33,7 +33,7 @@ class SHT31Driver(I2CSensor):
         ## Init the i2c sensor
         super().__init__(self.i2c_bus, self.i2c_address)
 
-        self._sensor_type = "SHT31"
+        self._sensor_name = "SHT31"
         self._sensor_id = sensor_id or f"{self.i2c_bus}-{self.i2c_address}"
 
         self.logger.debug(f"Initialized {self.sensor_type} sensor. id: {self.sensor_id}, i2c_bus: {self.i2c_bus}, i2c_address: {self.i2c_address}")
@@ -41,14 +41,13 @@ class SHT31Driver(I2CSensor):
     ## Properties
 
     @property
-    def sensor_type(self) -> str:
-        return self._sensor_type
+    def sensor_name(self) -> str:
+        return self._sensor_name
 
 
     @property
     def sensor_id(self) -> str:
         return self._sensor_id
-
     ## Methods
 
     def _read_sht3x_data(self) -> List[bytes]:
