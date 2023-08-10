@@ -6,6 +6,7 @@ from utilities.logging.log_level import LogLevel
 from sensor.sensors.ds18b20.ds18b20_config import DS18B20Config
 from sensor.sensors.pms7003.pms7003_config import PMS7003Config
 from sensor.sensors.sht31.sht31_config import SHT31Config
+from storage.clients.influx.influxdb_config import InfluxDBConfig
 
 
 class SensorStasherConfig(BaseModel):
@@ -54,4 +55,11 @@ class SensorStasherConfig(BaseModel):
         default=None,
         title="SHT31 Sensor",
         description="Configuration for the SHT31 temperature and humidity sensor."
+    )
+
+    ## Storage Configuration
+    influxdb: Optional[InfluxDBConfig] = Field(
+        default=None,
+        title="InfluxDB",
+        description="Configuration for the InfluxDB storage client."
     )
