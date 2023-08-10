@@ -4,8 +4,10 @@ from pathlib import Path
 import contextlib
 
 from sensor.sensor_adapter import SensorAdapter
+from sensor.models.sensor_type import SensorType
 from sensor.exceptions.device_in_use_exception import DeviceInUseException
-from utilities import initialize_logging, validate_system
+from utilities.utilities import validate_system
+from utilities.logging.logging import Logging
 
 
 class SerialSensor(SensorAdapter):
@@ -17,7 +19,7 @@ class SerialSensor(SensorAdapter):
     ## Lifecycle
 
     def __init__(self, serial_device_path: Path):
-        self.logger = initialize_logging(logging.getLogger(__name__))
+        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
         ## Verify that that the serial hardware is available
         if (not self.get_serial_hardware_state()):
@@ -35,6 +37,12 @@ class SerialSensor(SensorAdapter):
         except DeviceInUseException as e:
             self.logger.error(f"Unable to register serial sensor, device already in use. {e}")
             return
+
+    ## Properties
+
+    @property
+    def sensor_type(self) -> SensorType:
+        return SensorType.SERIAL
 
     ## Methods
 

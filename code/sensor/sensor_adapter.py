@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from sensor.models.sensor_datum import SensorDatum
+from sensor.models.sensor_type import SensorType
+from sensor.models.datum.sensor_datum import SensorDatum
 
 
 class SensorAdapter(ABC):
@@ -13,7 +14,13 @@ class SensorAdapter(ABC):
 
     @property
     @abstractmethod
-    def sensor_type(self) -> str:
+    def sensor_type(self) -> SensorType:
+        pass
+
+
+    @property
+    @abstractmethod
+    def sensor_name(self) -> str:
         pass
 
 

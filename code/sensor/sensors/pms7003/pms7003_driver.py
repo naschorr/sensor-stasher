@@ -5,26 +5,27 @@ from pathlib import Path
 from typing import List
 
 from sensor.sensor_types.serial.serial_sensor import SerialSensor
-from sensor.models.sensor_datum import SensorDatum
+from sensor.models.datum.sensor_datum import SensorDatum
 from .pms7003_datum import PMS7003Datum
-from utilities import load_config, initialize_logging
+from utilities.configuration import Configuration
+from utilities.logging.logging import Logging
 
 
 class PMS7003Driver(SerialSensor):
     def __init__(self, sensor_id: str):
-        config = load_config(Path(__file__).parent)
-        self.logger = initialize_logging(logging.getLogger(__name__))
+        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
         ## Load config
-        self.serial_device_path = config.get('serial_device_path')
-        assert (self.serial_device_path is not None)
-        self.wakeup_time_seconds: int = config.get('wakeup_time_seconds', 30)
+        configuration = Configuration.load_configuration().pms7003
+        assert (configuration is not None)
+        self.serial_device_path = configuration.serial_device_path
+        self.wakeup_time_seconds = configuration.wakeup_time_seconds
 
         ## Init the serial sensor
         super().__init__(self.serial_device_path)
 
-        self._sensor_type = "PMS7003"
-        self._sensor_id = sensor_id or self.serial_device_path
+        self._sensor_name = "PMS7003"
+        self._sensor_id = sensor_id or str(self.serial_device_path)
 
         self.sensor = Pms7003Sensor(self.serial_device_path)
 
@@ -33,8 +34,8 @@ class PMS7003Driver(SerialSensor):
     ## Properties
 
     @property
-    def sensor_type(self) -> str:
-        return self._sensor_type
+    def sensor_name(self) -> str:
+        return self._sensor_name
 
 
     @property

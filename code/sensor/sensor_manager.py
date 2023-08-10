@@ -2,14 +2,14 @@ import logging
 from typing import List, Set
 
 from sensor.sensor_adapter import SensorAdapter
-from sensor.models.sensor_datum import SensorDatum
+from sensor.models.datum.sensor_datum import SensorDatum
 
-from utilities import initialize_logging
+from utilities.logging.logging import Logging
 
 
 class SensorManager:
     def __init__(self):
-        self.logger = initialize_logging(logging.getLogger(__name__))
+        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
         self.sensors: Set[SensorAdapter] = set()
 

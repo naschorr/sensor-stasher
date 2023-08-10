@@ -4,8 +4,10 @@ from pathlib import Path
 import contextlib
 
 from sensor.sensor_adapter import SensorAdapter
+from sensor.models.sensor_type import SensorType
 from sensor.exceptions.device_in_use_exception import DeviceInUseException
-from utilities import initialize_logging, validate_system
+from utilities.utilities import validate_system
+from utilities.logging.logging import Logging
 
 
 class OneWireSensor(SensorAdapter):
@@ -17,7 +19,7 @@ class OneWireSensor(SensorAdapter):
     ## Lifecycle
 
     def __init__(self, onewire_device_path: Path):
-        self.logger = initialize_logging(logging.getLogger(__name__))
+        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
         ## Verify that 1-wire is available
         if (not self.get_onewire_state()):
@@ -40,6 +42,12 @@ class OneWireSensor(SensorAdapter):
         ## Note that you may need to load additional modules in specific drivers (ex: w1-therm for the DS18B20
         ## temperature sensor)
         os.system("modprobe w1-gpio")
+
+    ## Properties
+
+    @property
+    def sensor_type(self) -> SensorType:
+        return SensorType.ONEWIRE
 
     ## Methods
 

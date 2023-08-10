@@ -16,20 +16,23 @@ from sensor.sensors.example_sensor.example_sensor_driver import ExampleSensorDri
 from storage.storage_manager import StorageManager
 from storage.storage_adapter import StorageAdapter
 from storage.clients.influx.influxdb_client import InfluxDBClient
+from models.config.sensor_stasher_config import SensorStasherConfig
 
-from utilities import load_config, initialize_logging
+from utilities.configuration import Configuration
+from utilities.logging.logging import Logging
 
 
 class SensorStasher:
     def __init__(self):
-        config = load_config()
-        self.logger = initialize_logging(logging.getLogger(__name__))
+        configuration: SensorStasherConfig = Configuration.load_configuration()
+        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
-        self.sensor_poll_interval_seconds: int = config.get('sensor_poll_interval_seconds')
-        system_type = config.get('system_type')
-        self.system_type: str = system_type if system_type is not None else platform.platform()
-        system_id = config.get('system_id')
-        self.system_id: str = system_id if system_id is not None else self._get_system_id()
+        self.sensor_poll_interval_seconds = configuration.sensor_poll_interval_seconds
+        self.system_type = configuration.system_type if configuration.system_type is not None else platform.platform()
+        self.system_id: str = configuration.system_id if configuration.system_id is not None else self._get_system_id()
+
+        ## todo: Discover available sensors, compare with configuration, and initialize what's available and valid
+        ## todo: config should probably have a list of sensors instead of discrete ones
 
         self._loop = None
         self.sensor_manager: SensorManager = SensorManager()
