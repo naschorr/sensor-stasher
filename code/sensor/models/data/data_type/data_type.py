@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class DatumCategory(Enum):
+class DataType(str, Enum):
     AIR_QUALITY = "air_quality"
     TEMPERATURE = "temperature"
     HUMIDITY = "humidity"

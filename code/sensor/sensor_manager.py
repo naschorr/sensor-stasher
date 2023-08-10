@@ -2,7 +2,7 @@ import logging
 from typing import List, Set
 
 from sensor.sensor_adapter import SensorAdapter
-from sensor.models.datum.sensor_datum import SensorDatum
+from sensor.models.data.sensor_datum import SensorDatum
 
 from utilities.logging.logging import Logging
 

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from sensor.models.datum.sensor_datum import SensorDatum
+from sensor.models.data.sensor_datum import SensorDatum
 from storage.models.storage_type import StorageType
 
 
