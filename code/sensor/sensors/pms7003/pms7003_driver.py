@@ -45,26 +45,27 @@ class PMS7003Driver(SerialSensor):
     ## Adapter methods
 
     async def read(self) -> List[SensorDatum]:
-        ## Todo: what if this method is called multiple times within a short interval? This really needs some flavor of lock
+        ## Lock to prevent multiple wakeup -> read -> sleep cycles from happening at the same time
+        lock = asyncio.Lock()
 
-        data = {}
+        async with lock:
+            ## Wake the sensor up and spin the fan to get air flowing, and wait for the sensor to move air around
+            self.wakeup()
+            await asyncio.sleep(self.wakeup_time_seconds)
 
-        ## Wake the sensor up and spin the fan to get air flowing, and wait for the sensor to move air around
-        self.wakeup()
-        await asyncio.sleep(self.wakeup_time_seconds)
+            ## Read the data from the sensor
+            data = {}
+            try:
+                data = self.sensor.read()
+            except PmsSensorException as e:
+                self.logger.exception(f"Unable to read sensor with type: '{self.sensor_type}' and id: '{self.sensor_id}'", exc_info=e)
+                raise e
+            finally:
+                ## Put the sensor back to sleep, and shut off the fan
+                self.sleep()
 
-        ## Read the data from the sensor
-        try:
-            data = self.sensor.read()
-        except PmsSensorException as e:
-            self.logger.exception(f"Unable to read sensor with type: '{self.sensor_type}' and id: '{self.sensor_id}'", exc_info=e)
-            raise e
-        finally:
-            ## Put the sensor back to sleep, and shut off the fan
-            self.sleep()
-
-        ## Format and return the data
-        return [PMS7003Datum(self.sensor_type, self.sensor_id, data)]
+            ## Format and return the data
+            return [PMS7003Datum(self.sensor_type, self.sensor_id, data)]
 
     ## Methods
 
