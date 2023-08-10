@@ -1,6 +1,0 @@
-{
-    "url": "The URL of your InfluxDB instance",
-    "organization": "The organization you want to write to",
-    "bucket": "The bucket you want to write to",
-    "api_token": "The API token you want to use"
-}
