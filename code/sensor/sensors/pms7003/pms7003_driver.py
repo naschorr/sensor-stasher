@@ -6,18 +6,16 @@ from typing import List
 
 from sensor.sensor_types.serial.serial_sensor import SerialSensor
 from sensor.models.data.sensor_datum import SensorDatum
-from .pms7003_datum import PMS7003Datum
+from sensor.sensors.pms7003.pms7003_datum import PMS7003Datum
+from sensor.sensors.pms7003.pms7003_config import PMS7003Config
 from utilities.configuration import Configuration
 from utilities.logging.logging import Logging
 
 
 class PMS7003Driver(SerialSensor):
-    def __init__(self, sensor_id: str):
+    def __init__(self, configuration: PMS7003Config):
         self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
-        ## Load config
-        configuration = Configuration.load_configuration().pms7003
-        assert (configuration is not None)
         self.serial_device_path = configuration.serial_device_path
         self.wakeup_time_seconds = configuration.wakeup_time_seconds
 
@@ -25,7 +23,7 @@ class PMS7003Driver(SerialSensor):
         super().__init__(self.serial_device_path)
 
         self._sensor_name = "PMS7003"
-        self._sensor_id = sensor_id or str(self.serial_device_path)
+        self._sensor_id = configuration.sensor_id or str(self.serial_device_path)
 
         self.sensor = Pms7003Sensor(self.serial_device_path)
 

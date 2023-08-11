@@ -3,7 +3,7 @@
     "log_level"                             : "warning",
 
     "ds18b20": {
-        "one_wire_device_path": "/sys/bus/w1/devices/28-*/w1_slave"
+        "onewire_device_path": "/sys/bus/w1/devices/28-*/w1_slave"
     },
     "pms7003": {
         "serial_device_path": "/dev/serial0"

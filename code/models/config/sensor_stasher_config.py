@@ -1,12 +1,13 @@
 from typing import Optional
 from pathlib import Path
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, DirectoryPath
 
-from utilities.logging.log_level import LogLevel
 from sensor.sensors.ds18b20.ds18b20_config import DS18B20Config
 from sensor.sensors.pms7003.pms7003_config import PMS7003Config
 from sensor.sensors.sht31.sht31_config import SHT31Config
 from storage.clients.influx.influxdb_config import InfluxDBConfig
+from utilities.utilities import get_root_path
+from utilities.logging.log_level import LogLevel
 
 
 class SensorStasherConfig(BaseModel):
@@ -25,7 +26,11 @@ class SensorStasherConfig(BaseModel):
         default=300,
         description="The number of seconds to wait between polling sensors."
     )
-    log_level: Optional[LogLevel] = Field(
+    sensors_directory_path: DirectoryPath = Field(
+        default=get_root_path() / "code" / "sensor" / "sensors",
+        description="The path to the directory containing sensor implementations."
+    )
+    log_level: LogLevel = Field(
         default=LogLevel.ERROR,
         title="Log Level",
         description="The log level to use for the application."

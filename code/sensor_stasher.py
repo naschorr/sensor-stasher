@@ -7,12 +7,6 @@ import logging
 from datetime import datetime, timedelta
 
 from sensor.sensor_manager import SensorManager
-from sensor.sensor_adapter import SensorAdapter
-from sensor.sensors.ds18b20.ds18b20_driver import DS18B20Driver
-from sensor.sensors.pms7003.pms7003_driver import PMS7003Driver
-from sensor.sensors.sht31.sht31_driver import SHT31Driver
-from sensor.sensors.example_sensor.example_sensor_driver import ExampleSensorDriver
-
 from storage.storage_manager import StorageManager
 from storage.storage_adapter import StorageAdapter
 from storage.clients.influx.influxdb_client import InfluxDBClient
@@ -30,9 +24,6 @@ class SensorStasher:
         self.sensor_poll_interval_seconds = configuration.sensor_poll_interval_seconds
         self.system_type = configuration.system_type if configuration.system_type is not None else platform.platform()
         self.system_id: str = configuration.system_id if configuration.system_id is not None else self._get_system_id()
-
-        ## todo: Discover available sensors, compare with configuration, and initialize what's available and valid
-        ## todo: config should probably have a list of sensors instead of discrete ones
 
         self._loop = None
         self.sensor_manager: SensorManager = SensorManager()
@@ -59,10 +50,6 @@ class SensorStasher:
             system_id = str(uuid.getnode())
 
         return system_id
-
-
-    def register_sensor(self, sensor: SensorAdapter, sensor_id: str):
-        self.sensor_manager.register_sensor(sensor, sensor_id)
 
 
     def register_storage(self, storage: StorageAdapter):
@@ -119,13 +106,5 @@ class SensorStasher:
 
 if (__name__ == '__main__'):
     monitor = SensorStasher()
-    # monitor.register_sensor(DS18B20Driver, None)
-    # monitor.register_sensor(PMS7003Driver, None)
-    # monitor.register_sensor(SHT31Driver, None)
-    monitor.register_sensor(ExampleSensorDriver, 'example_sensor_0')
-    monitor.register_sensor(ExampleSensorDriver, 'example_sensor_1')
-    monitor.register_sensor(ExampleSensorDriver, 'example_sensor_2')
-    monitor.register_sensor(ExampleSensorDriver, 'example_sensor_3')
-    monitor.register_sensor(ExampleSensorDriver, 'example_sensor_4')
     monitor.register_storage(InfluxDBClient)
     monitor.start_monitoring()

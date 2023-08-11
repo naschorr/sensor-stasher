@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 import contextlib
 
-from sensor.sensor_adapter import SensorAdapter
+from sensor.models.sensor_adapter import SensorAdapter
 from sensor.models.sensor_type import SensorType
 from sensor.exceptions.device_in_use_exception import DeviceInUseException
 from utilities.utilities import validate_system
