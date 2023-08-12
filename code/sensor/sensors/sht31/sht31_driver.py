@@ -1,12 +1,11 @@
 import logging
 import time
-from pathlib import Path
 from typing import List
 
 from sensor.sensor_types.i2c.i2c_sensor import I2CSensor
 from sensor.models.data.sensor_datum import SensorDatum
-from .sht31_datum import SHT31TemperatureDatum, SHT31HumidityDatum
-from utilities.configuration import Configuration
+from sensor.sensors.sht31.sht31_datum import SHT31TemperatureDatum, SHT31HumidityDatum
+from sensor.sensors.sht31.sht31_config import SHT31Config
 from utilities.logging.logging import Logging
 
 
@@ -18,12 +17,9 @@ class SHT31Driver(I2CSensor):
     https://sensirion.com/media/documents/213E6A3B/61641DC3/Sensirion_Humidity_Sensors_SHT3x_Datasheet_digital.pdf
     '''
 
-    def __init__(self, sensor_id: str):
+    def __init__(self, configuration: SHT31Config):
         self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
-        ## Load config
-        configuration = Configuration.load_configuration().sht31
-        assert (configuration is not None)
         self.i2c_bus = configuration.i2c_bus
         self.i2c_address = int(configuration.i2c_address, base=16)
         self.temperature_celcius_offset = configuration.temperature_celcius_offset
@@ -33,7 +29,7 @@ class SHT31Driver(I2CSensor):
         super().__init__(self.i2c_bus, self.i2c_address)
 
         self._sensor_name = "SHT31"
-        self._sensor_id = sensor_id or f"{self.i2c_bus}-{self.i2c_address}"
+        self._sensor_id = configuration.sensor_id or f"{self.i2c_bus}-{self.i2c_address}"
 
         self.logger.debug(f"Initialized {self.sensor_type} sensor. id: {self.sensor_id}, i2c_bus: {self.i2c_bus}, i2c_address: {self.i2c_address}")
 
@@ -47,6 +43,7 @@ class SHT31Driver(I2CSensor):
     @property
     def sensor_id(self) -> str:
         return self._sensor_id
+
     ## Methods
 
     def _read_sht3x_data(self) -> List[bytes]:

@@ -1,9 +1,9 @@
 from typing import List
 
-from sensor.sensor_adapter import SensorAdapter
+from sensor.models.sensor_adapter import SensorAdapter
 from sensor.models.data.sensor_datum import SensorDatum
 from sensor.models.sensor_type import SensorType
-from .example_sensor_datum import ExampleSensorDatum
+from sensor.sensors.example_sensor.example_sensor_datum import ExampleSensorDatum
 
 
 class ExampleSensorDriver(SensorAdapter):
@@ -11,10 +11,10 @@ class ExampleSensorDriver(SensorAdapter):
     Simple, system agnostic sensor driver for testing basic functionality without a Raspberry Pi
     """
 
-    def __init__(self, sensor_id: str):
+    def __init__(self, configuration: None):
         self._sensor_type = SensorType.HTTP
         self._sensor_name = "Example Sensor"
-        self._sensor_id = sensor_id
+        self._sensor_id = "Example Sensor"
 
     ## Properties
 
@@ -36,7 +36,7 @@ class ExampleSensorDriver(SensorAdapter):
 
     async def read(self) -> List[SensorDatum]:
         data = {
-            'name': f"{self.sensor_type}-{self.sensor_id}",
+            'name': self.sensor_name,
             'example_key': 'example_value'
         }
 

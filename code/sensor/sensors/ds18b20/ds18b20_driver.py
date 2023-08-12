@@ -5,23 +5,20 @@ from typing import List
 
 from sensor.sensor_types.onewire.onewire_sensor import OneWireSensor
 from sensor.models.data.sensor_datum import SensorDatum
-from .ds18b20_datum import DS18B20Datum
-from utilities.configuration import Configuration
+from sensor.sensors.ds18b20.ds18b20_datum import DS18B20Datum
+from sensor.sensors.ds18b20.ds18b20_config import DS18B20Config
 from utilities.logging.logging import Logging
 
 
 class DS18B20Driver(OneWireSensor):
-    def __init__(self, sensor_id: str):
+    def __init__(self, configuration: DS18B20Config):
         self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
-        ## Load config
-        configuration = Configuration.load_configuration().ds18b20
-        assert (configuration is not None)
         self.one_wire_device_path = configuration.onewire_device_path
         self.temperature_celcius_offset = configuration.temperature_celcius_offset
 
         self._sensor_name = "DS18B20"
-        self._sensor_id = sensor_id or self.one_wire_device_path.parent.name or str(self.one_wire_device_path)
+        self._sensor_id = configuration.sensor_id or self.one_wire_device_path.parent.name or str(self.one_wire_device_path)
 
         ## Load the 1-wire temperature sensor kernel module
         os.system("modprobe w1-therm")
@@ -51,7 +48,7 @@ class DS18B20Driver(OneWireSensor):
 
     @one_wire_device_path.setter
     def one_wire_device_path(self, value):
-        if (type(value) is Path):
+        if (isinstance(value, Path)):
             self._one_wire_device_path = value
         elif (type(value) is str):
             if (value[0] == "/"):

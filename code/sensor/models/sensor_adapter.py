@@ -3,11 +3,12 @@ from typing import List
 
 from sensor.models.sensor_type import SensorType
 from sensor.models.data.sensor_datum import SensorDatum
+from sensor.models.config.sensor_config import SensorConfig
 
 
 class SensorAdapter(ABC):
     @abstractmethod
-    def __init__(self, sensor_id: str):
+    def __init__(self, configuration: SensorConfig):
         pass
 
     ## Properties
