@@ -1,7 +1,7 @@
 from pydantic import ConfigDict, Field
 
 from sensor.models.config.sensor_config import SensorConfig
-from sensor.sensor_types.serial.serial_sensor_config import SerialSensorConfig
+from sensor.communicators.serial.serial_sensor_config import SerialSensorConfig
 from sensor.models.data.data_type.config.air_quality_sensor_config import AirQualitySensorConfig
 
 

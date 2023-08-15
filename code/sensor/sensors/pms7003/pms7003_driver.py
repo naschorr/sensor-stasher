@@ -1,30 +1,31 @@
 import asyncio
 import logging
 from pms7003 import Pms7003Sensor, PmsSensorException
-from pathlib import Path
 from typing import List
 
-from sensor.sensor_types.serial.serial_sensor import SerialSensor
+from sensor.models.sensor_adapter import SensorAdapter
+from sensor.communicators.serial.serial_communicator import SerialCommunicator
+from sensor.platforms.sensors.raspberrypi_sensor import RaspberryPiSensor
 from sensor.models.data.sensor_datum import SensorDatum
 from sensor.sensors.pms7003.pms7003_datum import PMS7003Datum
 from sensor.sensors.pms7003.pms7003_config import PMS7003Config
-from utilities.configuration import Configuration
+from sensor.services.inherited_class_platform_operator import InheritedClassPlatformOperator
 from utilities.logging.logging import Logging
 
 
-class PMS7003Driver(SerialSensor):
+class PMS7003Driver(SensorAdapter, SerialCommunicator, RaspberryPiSensor):
     def __init__(self, configuration: PMS7003Config):
         self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
         self.serial_device_path = configuration.serial_device_path
         self.wakeup_time_seconds = configuration.wakeup_time_seconds
 
-        ## Init the serial sensor
-        super().__init__(self.serial_device_path)
-
         self._sensor_name = "PMS7003"
         self._sensor_id = configuration.sensor_id or str(self.serial_device_path)
+        self._reader = InheritedClassPlatformOperator().get_sensor_reader(self)
 
+        ## Init the serial communicator and the sensor itself
+        SerialCommunicator.__init__(self, self.serial_device_path)
         self.sensor = Pms7003Sensor(self.serial_device_path)
 
         self.logger.debug(f"Initialized {self.sensor_type} sensor. path: '{self.serial_device_path}', id: '{self.sensor_id}', wakeup_time_seconds: '{self.wakeup_time_seconds}'")
@@ -40,9 +41,13 @@ class PMS7003Driver(SerialSensor):
     def sensor_id(self) -> str:
         return self._sensor_id
 
-    ## Adapter methods
+    ## Methods
 
     async def read(self) -> List[SensorDatum]:
+        return await self._reader()
+
+
+    async def read_sensor_raspberrypi(self) -> List[SensorDatum]:
         ## Lock to prevent multiple wakeup -> read -> sleep cycles from happening at the same time
         lock = asyncio.Lock()
 
@@ -65,7 +70,6 @@ class PMS7003Driver(SerialSensor):
             ## Format and return the data
             return [PMS7003Datum(self.sensor_type, self.sensor_id, data)]
 
-    ## Methods
 
     def wakeup(self):
         with self.sensor._serial as sensor:

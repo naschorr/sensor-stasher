@@ -15,12 +15,6 @@ class SensorAdapter(ABC):
 
     @property
     @abstractmethod
-    def sensor_type(self) -> SensorType:
-        pass
-
-
-    @property
-    @abstractmethod
     def sensor_name(self) -> str:
         pass
 
@@ -33,5 +27,5 @@ class SensorAdapter(ABC):
     ## Methods
 
     @abstractmethod
-    async def read(self) -> List[SensorDatum]:
+    async def read(self) -> list[SensorDatum]:
         pass

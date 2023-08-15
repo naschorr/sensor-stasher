@@ -2,14 +2,17 @@ import logging
 import time
 from typing import List
 
-from sensor.sensor_types.i2c.i2c_sensor import I2CSensor
+from sensor.models.sensor_adapter import SensorAdapter
+from sensor.communicators.i2c.i2c_communicator import I2CCommunicator
+from sensor.platforms.sensors.raspberrypi_sensor import RaspberryPiSensor
 from sensor.models.data.sensor_datum import SensorDatum
 from sensor.sensors.sht31.sht31_datum import SHT31TemperatureDatum, SHT31HumidityDatum
 from sensor.sensors.sht31.sht31_config import SHT31Config
+from sensor.services.inherited_class_platform_operator import InheritedClassPlatformOperator
 from utilities.logging.logging import Logging
 
 
-class SHT31Driver(I2CSensor):
+class SHT31Driver(SensorAdapter, I2CCommunicator, RaspberryPiSensor):
     '''
     Simple interface for the SHT31 temperature and humidity sensor.
 
@@ -25,11 +28,12 @@ class SHT31Driver(I2CSensor):
         self.temperature_celcius_offset = configuration.temperature_celcius_offset
         self.humidity_relative_offset = configuration.humidity_relative_offset
 
-        ## Init the i2c sensor
-        super().__init__(self.i2c_bus, self.i2c_address)
-
         self._sensor_name = "SHT31"
         self._sensor_id = configuration.sensor_id or f"{self.i2c_bus}-{self.i2c_address}"
+        self._reader = InheritedClassPlatformOperator().get_sensor_reader(self)
+
+        ## Init the i2c communicator
+        I2CCommunicator.__init__(self, self.i2c_bus, self.i2c_address)
 
         self.logger.debug(f"Initialized {self.sensor_type} sensor. id: {self.sensor_id}, i2c_bus: {self.i2c_bus}, i2c_address: {self.i2c_address}")
 
@@ -46,22 +50,6 @@ class SHT31Driver(I2CSensor):
 
     ## Methods
 
-    def _read_sht3x_data(self) -> List[bytes]:
-        '''
-        Handles sht3x communications according to the datasheet. Note that this method does one single-shot
-        measurement, not a continous series of measurements.
-        '''
-
-        ## Initiate single-shot measurement
-        self.bus.write_i2c_block_data(self.i2c_address, 0x2C, [0x06])
-        ## Give sensor time to process this
-        time.sleep(0.5)
-
-        ## Read the raw bytes (6 of them) from the sensor, they are as follows:
-        ## [Temperature MSB][Temperature LSB][Temperature CRC][Humidity MSB][Humidity LSB][Humidity CRC]
-        return self.bus.read_i2c_block_data(self.i2c_address, 0x00, 6)
-
-
     def _extract_temperature_celcius_from_bytes(self, data: List[bytes]) -> float:
         temperature_msb_int = int.from_bytes(data[0], byteorder='big')
         temperature_lsb_int = int.from_bytes(data[1], byteorder='big')
@@ -77,9 +65,12 @@ class SHT31Driver(I2CSensor):
         ## Formula provided by the datasheet
         return 100 * ((humidity_msb_int * 256 + humidity_lsb_int) / 65535.0)
 
-    ## Adapter methods
 
-    async def read(self) -> List[SensorDatum]:
+    async def read(self) -> list[SensorDatum]:
+        return await self._reader()
+
+
+    async def read_sensor_raspberrypi(self) -> list[SensorDatum]:
         '''
         Handles the process of initializing the sensor, reading the temperature and humidity data, and formatting it
         into SensorDatum objects, and returning the sensor to an idle state.
@@ -89,7 +80,14 @@ class SHT31Driver(I2CSensor):
         '''
 
         try:
-            data = self._read_sht3x_data()
+            ## Initiate single-shot measurement
+            self.bus.write_i2c_block_data(self.i2c_address, 0x2C, [0x06])
+            ## Give sensor time to process this
+            time.sleep(0.5)
+
+            ## Read the raw bytes (6 of them) from the sensor, they are as follows:
+            ## [Temperature MSB][Temperature LSB][Temperature CRC][Humidity MSB][Humidity LSB][Humidity CRC]
+            data = self.bus.read_i2c_block_data(self.i2c_address, 0x00, 6)
         except Exception as e:
             self.logger.error(f"Failed to interact with {self.sensor_type} - {self.sensor_id} over i2c. {e}")
             return []

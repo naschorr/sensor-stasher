@@ -1,7 +1,7 @@
 from pydantic import ConfigDict, Field
 
 from sensor.models.config.sensor_config import SensorConfig
-from sensor.sensor_types.i2c.i2c_sensor_config import I2CSensorConfig
+from sensor.communicators.i2c.i2c_sensor_config import I2CSensorConfig
 from sensor.models.data.data_type.config.temperature_sensor_config import TemperatureSensorConfig
 from sensor.models.data.data_type.config.humidity_sensor_config import HumiditySensorConfig
 

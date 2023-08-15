@@ -11,9 +11,11 @@ from storage.storage_manager import StorageManager
 from storage.storage_adapter import StorageAdapter
 from storage.clients.influx.influxdb_client import InfluxDBClient
 from models.config.sensor_stasher_config import SensorStasherConfig
+from models.platform_type import PlatformType
 
 from utilities.configuration import Configuration
 from utilities.logging.logging import Logging
+from utilities.utilities import get_current_platform
 
 
 class SensorStasher:
@@ -36,10 +38,10 @@ class SensorStasher:
         system_id = None
 
         try:
-            if ('nt' in os.name):
+            if (get_current_platform() ==  PlatformType.WINDOWS):
                 ## Thanks to https://stackoverflow.com/a/66953913/1724602
                 system_id = str(subprocess.check_output('wmic csproduct get uuid'), 'utf-8').split('\n')[1].strip()
-            else:
+            elif (get_current_platform() == PlatformType.RASPBERRYPI):
                 ## Thanks to https://stackoverflow.com/a/37775731/1724602
                 system_id = str(subprocess.check_output(['cat', '/var/lib/dbus/machine-id']), 'utf-8').strip()
         except Exception as e:

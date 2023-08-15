@@ -1,7 +1,8 @@
 import json
-
 import platform
 from pathlib import Path
+
+from models.platform_type import PlatformType
 
 
 ## Config
@@ -22,15 +23,11 @@ def load_json(path: Path) -> dict:
         return json.load(fd)
 
 
-def validate_system(wrapped):
-    """
-    Simple decorator to ensure that sub-methods will only run on supported systems.
-    Right now, only the RaspberryPi is supported.
-    """
+def get_current_platform() -> PlatformType:
+    if (platform.uname().node.lower() == "raspberrypi"):
+        return PlatformType.RASPBERRYPI
+    if (platform.uname().system.lower() == "windows"):
+        return PlatformType.WINDOWS
+    ## More as necessary
 
-    def wrapper(self):
-        if (platform.uname().node != "raspberrypi"):
-            raise NotImplementedError("Only RaspberryPi is supported at this time.")
-        wrapped(self)
-
-    return wrapper
+    raise RuntimeError("Unsupported platform")
