@@ -9,6 +9,7 @@ from pathlib import Path
 from sensor.models.sensor_adapter import SensorAdapter
 from sensor.models.data.sensor_datum import SensorDatum
 from sensor.models.config.sensor_config import SensorConfig
+from sensor.exceptions.sensor_init_exception import SensorInitException
 from utilities.configuration import Configuration
 from utilities.logging.logging import Logging
 
@@ -26,9 +27,9 @@ class SensorManager:
 
 
         ## Sensor preparation
-        sensor_and_config_data = self.discover_sensors(sensors_directory_path)
+        sensor_and_config_data = self._discover_sensors(sensors_directory_path)
         self._available_sensors: set[SensorAdapter] = {sensor for sensor, _ in sensor_and_config_data}
-        self._registered_sensors: set[SensorAdapter] = self.initialize_sensors(sensor_and_config_data)
+        self._registered_sensors: set[SensorAdapter] = self._initialize_sensors(sensor_and_config_data)
 
         self.logger.info(f"Initialized {len(self._registered_sensors)} of {len(self._available_sensors)} sensors.")
 
@@ -45,25 +46,13 @@ class SensorManager:
 
     ## Methods
 
-    def sensor_configuration_retriever(self, sensor_config: SensorConfig) -> Optional[SensorConfig]:
-        configuration = Configuration.load_configuration()
+    def _discover_sensors(self, sensors_directory_path: Path) -> set[tuple[SensorAdapter, SensorConfig]]:
+        """
+        Discover all available sensors by traversing the sensors directory, and looking for driver classes (that inherit
+        from the base SensorAdapter class) and configuration classes (that inherit from the base SensorConfig class).
+        Pair up a corresponding driver and configuration class, and save them for future initialization.
+        """
 
-        for _, cls in inspect.getmembers(configuration):
-            with contextlib.suppress(TypeError):
-                ## todo: Improve this. `isinstance` wasn't really playing nice for the following:
-                ## sensor_config: <class 'ds18b20_config.DS18B20Config'> and
-                ## cls: DS18B20Config(...). I'm sure it's something simple though
-                if (
-                        hasattr(cls, "__module__") and
-                        cls.__module__ is not None and
-                        cls.__module__.endswith(sensor_config.__module__)
-                ):
-                    return cls
-
-        return None
-
-
-    def discover_sensors(self, sensors_directory_path: Path) -> set[tuple[SensorAdapter, SensorConfig]]:
         sensor_and_config_data = set()
 
         sensor_directory: Path
@@ -114,20 +103,71 @@ class SensorManager:
         return sensor_and_config_data
 
 
-    def initialize_sensors(self, sensor_and_config_data: set[tuple[SensorAdapter, SensorConfig]]) -> set[SensorAdapter]:
+    def _sensor_configuration_retriever(self, sensor_config: SensorConfig) -> Optional[SensorConfig]:
+        """
+        Attempts to find a configuration property with the same type as the provided sensor configuration class.
+        For example: the PMS7003Config sensor config would yield the pms7003 property of the Configuration class.
+        """
+
+        configuration = Configuration.load_configuration()
+
+        for _, cls in inspect.getmembers(configuration):
+            with contextlib.suppress(TypeError):
+                ## todo: Improve this. `isinstance` wasn't really playing nice for the following:
+                ## sensor_config: <class 'ds18b20_config.DS18B20Config'> and
+                ## cls: DS18B20Config(...). I'm sure it's something simple though
+                if (
+                        hasattr(cls, "__module__") and
+                        cls.__module__ is not None and
+                        cls.__module__.endswith(sensor_config.__module__)
+                ):
+                    return cls
+
+        return None
+
+
+    def _instantiate_sensor_driver(self, driver_class: SensorAdapter, configuration_class: Optional[SensorConfig]) -> SensorAdapter:
+        """
+        Handles instantiating the sensor driver from a given driver class and configuration class. Also attempts to
+        gracefully handle missing configuration classes.
+        """
+
+        ## If we found a configuration class, use that to find the actual processed configuration class of the same type
+        configuration = None
+        if (configuration_class is not None):
+            configuration = self._sensor_configuration_retriever(configuration_class)
+
+        ## Extract the parameters used to instantiate the driver class
+        parameters = [parameter for name, parameter in inspect.signature(driver_class.__init__).parameters.items()]
+
+        ## Less than two parameters? It can't have a `configuration` parameter.
+        if (len(parameters) < 2):
+            return driver_class()
+        ## What if it does (potentially) have the expected parameters?
+        elif (len(parameters) == 2):
+            ## Determine if the driver class requires configuration, and instantiate it
+            if (configuration is not None):
+                return driver_class(configuration)
+            elif (configuration is None and parameters[1].annotation is Optional):
+                return driver_class()
+            else:
+                raise SensorInitException(f"No configuration file provided with a non-optional configuration parameter for sensor: {driver_class.sensor_name}")
+        ## Otherwise, something's gone wrong
+        else:
+            raise SensorInitException(f"Invalid number of parameters for sensor: {driver_class.sensor_name}")
+
+
+    def _initialize_sensors(self, sensor_and_config_data: set[tuple[SensorAdapter, SensorConfig]]) -> set[SensorAdapter]:
+        """
+        Initialize the available sensors, and inject the relevant configuration property into them (if it exists). Note
+        that issues with sensor initialization won't stop the rest from initializing.
+        """
+
         sensors = set()
 
         for driver_class, configuration_class in sensor_and_config_data:
-            ## If we found a configuration class, use that to find the actual processed configuration class of the same type
-            configuration = None
-            if (configuration_class is not None):
-                configuration = self.sensor_configuration_retriever(configuration_class)
-
-            ## todo: check if the driver_class supports a null configuration object
-
-            ## Instantiate the driver class and add it to the in progress set of available sensors
             try:
-                sensors.add(driver_class(configuration))
+                sensors.add(self._instantiate_sensor_driver(driver_class, configuration_class))
             except Exception as e:
                 ## Couldn't instantiate? No worries, just ignore it and move on
                 self.logger.warn(f"Unable to instantiate sensor '{driver_class}'", exc_info=e)
@@ -137,6 +177,10 @@ class SensorManager:
 
 
     async def accumulate_all_sensor_data(self) -> list[SensorDatum]:
+        """
+        Look through all registered sensors and read their data. Returns a list of all the sensor data that was read.
+        """
+
         sensor_data = []
 
         for sensor in self.registered_sensors:

@@ -1,6 +1,5 @@
 import logging
 import time
-from typing import List
 
 from sensor.models.sensor_adapter import SensorAdapter
 from sensor.communicators.i2c.i2c_communicator import I2CCommunicator
@@ -50,7 +49,7 @@ class SHT31Driver(SensorAdapter, I2CCommunicator, RaspberryPiSensor):
 
     ## Methods
 
-    def _extract_temperature_celcius_from_bytes(self, data: List[bytes]) -> float:
+    def _extract_temperature_celcius_from_bytes(self, data: list[bytes]) -> float:
         temperature_msb_int = int.from_bytes(data[0], byteorder='big')
         temperature_lsb_int = int.from_bytes(data[1], byteorder='big')
 
@@ -58,7 +57,7 @@ class SHT31Driver(SensorAdapter, I2CCommunicator, RaspberryPiSensor):
         return -45 + (175 * (temperature_msb_int * 256 + temperature_lsb_int) / 65535.0)
 
 
-    def _extract_humidity_relative_from_bytes(self, data: List[bytes]) -> float:
+    def _extract_humidity_relative_from_bytes(self, data: list[bytes]) -> float:
         humidity_msb_int = int.from_bytes(data[3], byteorder='big')
         humidity_lsb_int = int.from_bytes(data[4], byteorder='big')
 
