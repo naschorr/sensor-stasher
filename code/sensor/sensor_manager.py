@@ -161,10 +161,12 @@ class SensorManager:
         sensors = set()
         for driver_class, configuration_class in sensor_and_config_data:
             try:
-                sensors.add(self._instantiate_sensor_driver(driver_class, configuration_class))
+                sensor = self._instantiate_sensor_driver(driver_class, configuration_class)
+                sensors.add(sensor)
+                self.logger.info(f"Successfully initialized sensor: '{sensor.__class__.__name__}' with id: {sensor.sensor_id}")
             except SensorInitException as e:
                 ## Couldn't instantiate? No worries, just ignore it and move on
-                self.logger.warn(f"Unable to instantiate sensor '{driver_class}'", exc_info=e)
+                self.logger.warn(f"Unable to initialize sensor: '{driver_class}'")
                 continue
 
         return sensors
