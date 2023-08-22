@@ -14,7 +14,7 @@ class RaspberryPiCommunicator(PlatformCommunicator, ABC):
         return PlatformType.RASPBERRYPI
 
     @staticmethod
-    def get_initialization_method() -> Callable:
+    def get_initializer_method() -> Callable:
         return RaspberryPiCommunicator.initialize_communicator_raspberrypi
 
     ## Methods

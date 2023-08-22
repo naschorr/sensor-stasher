@@ -9,7 +9,7 @@ from sensor.platforms.sensors.raspberrypi_sensor import RaspberryPiSensor
 from sensor.models.data.sensor_datum import SensorDatum
 from sensor.sensors.ds18b20.ds18b20_datum import DS18B20Datum
 from sensor.sensors.ds18b20.ds18b20_config import DS18B20Config
-from sensor.services.inherited_class_platform_operator import InheritedClassPlatformOperator
+from utilities.inherited_class_platform_operator import InheritedClassPlatformOperator
 from utilities.logging.logging import Logging
 
 

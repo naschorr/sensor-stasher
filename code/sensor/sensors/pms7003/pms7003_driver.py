@@ -9,7 +9,7 @@ from sensor.platforms.sensors.raspberrypi_sensor import RaspberryPiSensor
 from sensor.models.data.sensor_datum import SensorDatum
 from sensor.sensors.pms7003.pms7003_datum import PMS7003Datum
 from sensor.sensors.pms7003.pms7003_config import PMS7003Config
-from sensor.services.inherited_class_platform_operator import InheritedClassPlatformOperator
+from utilities.inherited_class_platform_operator import InheritedClassPlatformOperator
 from utilities.logging.logging import Logging
 
 

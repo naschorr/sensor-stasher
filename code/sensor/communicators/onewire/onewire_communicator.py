@@ -6,8 +6,8 @@ import contextlib
 from sensor.models.sensor_type import SensorType
 from sensor.models.communicator_adapter import CommunicatorAdapter
 from sensor.platforms.communicators.raspberrypi_communicator import RaspberryPiCommunicator
-from sensor.services.inherited_class_platform_operator import InheritedClassPlatformOperator
 from sensor.exceptions.device_in_use_exception import DeviceInUseException
+from utilities.inherited_class_platform_operator import InheritedClassPlatformOperator
 from utilities.logging.logging import Logging
 
 

@@ -15,5 +15,5 @@ class PlatformCommunicator(ABC):
 
     @staticmethod
     @abstractmethod
-    def get_initialization_method() -> Callable:
+    def get_initializer_method() -> Callable:
         pass

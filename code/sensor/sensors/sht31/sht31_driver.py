@@ -7,7 +7,7 @@ from sensor.platforms.sensors.raspberrypi_sensor import RaspberryPiSensor
 from sensor.models.data.sensor_datum import SensorDatum
 from sensor.sensors.sht31.sht31_datum import SHT31TemperatureDatum, SHT31HumidityDatum
 from sensor.sensors.sht31.sht31_config import SHT31Config
-from sensor.services.inherited_class_platform_operator import InheritedClassPlatformOperator
+from utilities.inherited_class_platform_operator import InheritedClassPlatformOperator
 from utilities.logging.logging import Logging
 
 

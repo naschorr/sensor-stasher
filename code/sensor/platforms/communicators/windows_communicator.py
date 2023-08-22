@@ -14,7 +14,7 @@ class WindowsCommunicator(PlatformCommunicator, ABC):
         return PlatformType.WINDOWS
 
     @staticmethod
-    def get_initialization_method() -> Callable:
+    def get_initializer_method() -> Callable:
         return WindowsCommunicator.initialize_communicator_windows
 
     ## Methods

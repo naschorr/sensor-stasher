@@ -25,7 +25,6 @@ class SensorManager:
         assert (configuration is not None)
         sensors_directory_path = configuration.sensors_directory_path
 
-
         ## Sensor preparation
         sensor_and_config_data = self._discover_sensors(sensors_directory_path)
         self._available_sensors: set[SensorAdapter] = {sensor for sensor, _ in sensor_and_config_data}
@@ -164,7 +163,6 @@ class SensorManager:
         """
 
         sensors = set()
-
         for driver_class, configuration_class in sensor_and_config_data:
             try:
                 sensors.add(self._instantiate_sensor_driver(driver_class, configuration_class))
