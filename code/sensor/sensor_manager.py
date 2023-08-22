@@ -6,27 +6,25 @@ import contextlib
 from typing import Optional
 from pathlib import Path
 
+from models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.models.sensor_adapter import SensorAdapter
 from sensor.models.data.sensor_datum import SensorDatum
 from sensor.models.config.sensor_config import SensorConfig
 from sensor.exceptions.sensor_init_exception import SensorInitException
-from utilities.configuration import Configuration
 from utilities.logging.logging import Logging
 
 
 class SensorManager:
     ## Lifecycle
 
-    def __init__(self):
+    def __init__(self, configuration: SensorStasherConfig):
         self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
         ## Configuration
-        configuration = Configuration.load_configuration()
-        assert (configuration is not None)
-        sensors_directory_path = configuration.sensors_directory_path
+        self.configuration = configuration
 
         ## Sensor preparation
-        sensor_and_config_data = self._discover_sensors(sensors_directory_path)
+        sensor_and_config_data = self._discover_sensors(self.configuration.sensors_directory_path)
         self._available_sensors: set[SensorAdapter] = {sensor for sensor, _ in sensor_and_config_data}
         self._registered_sensors: set[SensorAdapter] = self._initialize_sensors(sensor_and_config_data)
 
@@ -108,9 +106,7 @@ class SensorManager:
         For example: the PMS7003Config sensor config would yield the pms7003 property of the Configuration class.
         """
 
-        configuration = Configuration.load_configuration()
-
-        for _, cls in inspect.getmembers(configuration):
+        for _, cls in inspect.getmembers(self.configuration):
             with contextlib.suppress(TypeError):
                 ## todo: Improve this. `isinstance` wasn't really playing nice for the following:
                 ## sensor_config: <class 'ds18b20_config.DS18B20Config'> and
@@ -166,7 +162,7 @@ class SensorManager:
         for driver_class, configuration_class in sensor_and_config_data:
             try:
                 sensors.add(self._instantiate_sensor_driver(driver_class, configuration_class))
-            except Exception as e:
+            except SensorInitException as e:
                 ## Couldn't instantiate? No worries, just ignore it and move on
                 self.logger.warn(f"Unable to instantiate sensor '{driver_class}'", exc_info=e)
                 continue
