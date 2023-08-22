@@ -1,5 +1,4 @@
 import asyncio
-import os
 import subprocess
 import platform
 import uuid
@@ -11,9 +10,11 @@ from storage.storage_manager import StorageManager
 from storage.storage_adapter import StorageAdapter
 from storage.clients.influx.influxdb_client import InfluxDBClient
 from models.config.sensor_stasher_config import SensorStasherConfig
+from models.platform_type import PlatformType
 
 from utilities.configuration import Configuration
 from utilities.logging.logging import Logging
+from utilities.misc import get_current_platform
 
 
 class SensorStasher:
@@ -26,7 +27,7 @@ class SensorStasher:
         self.system_id: str = configuration.system_id if configuration.system_id is not None else self._get_system_id()
 
         self._loop = None
-        self.sensor_manager: SensorManager = SensorManager()
+        self.sensor_manager: SensorManager = SensorManager(configuration)
         self.storage_manager: StorageManager = StorageManager(self.system_type, self.system_id)
 
         self.logger.debug(f"Initialized SensorStasher with system type: '{self.system_type}', system id: '{self.system_id}', and sensor poll interval: '{self.sensor_poll_interval_seconds}' seconds.")
@@ -36,10 +37,10 @@ class SensorStasher:
         system_id = None
 
         try:
-            if ('nt' in os.name):
+            if (get_current_platform() ==  PlatformType.WINDOWS):
                 ## Thanks to https://stackoverflow.com/a/66953913/1724602
                 system_id = str(subprocess.check_output('wmic csproduct get uuid'), 'utf-8').split('\n')[1].strip()
-            else:
+            elif (get_current_platform() == PlatformType.RASPBERRYPI):
                 ## Thanks to https://stackoverflow.com/a/37775731/1724602
                 system_id = str(subprocess.check_output(['cat', '/var/lib/dbus/machine-id']), 'utf-8').strip()
         except Exception as e:
@@ -92,7 +93,7 @@ class SensorStasher:
         if (self._loop is not None):
             self.stop_monitoring()
 
-        self._loop = asyncio.get_event_loop()
+        self._loop = asyncio.new_event_loop()
         self._loop.run_until_complete(self._process_sensor_data_loop())
 
 

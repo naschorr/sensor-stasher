@@ -1,23 +1,16 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import Optional
 
-from sensor.models.sensor_type import SensorType
 from sensor.models.data.sensor_datum import SensorDatum
 from sensor.models.config.sensor_config import SensorConfig
 
 
 class SensorAdapter(ABC):
     @abstractmethod
-    def __init__(self, configuration: SensorConfig):
+    def __init__(self, configuration: Optional[SensorConfig]):
         pass
 
     ## Properties
-
-    @property
-    @abstractmethod
-    def sensor_type(self) -> SensorType:
-        pass
-
 
     @property
     @abstractmethod
@@ -33,5 +26,5 @@ class SensorAdapter(ABC):
     ## Methods
 
     @abstractmethod
-    async def read(self) -> List[SensorDatum]:
+    async def read(self) -> list[SensorDatum]:
         pass
