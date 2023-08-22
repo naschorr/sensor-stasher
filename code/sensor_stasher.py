@@ -93,7 +93,7 @@ class SensorStasher:
         if (self._loop is not None):
             self.stop_monitoring()
 
-        self._loop = asyncio.get_event_loop()
+        self._loop = asyncio.new_event_loop()
         self._loop.run_until_complete(self._process_sensor_data_loop())
 
 
