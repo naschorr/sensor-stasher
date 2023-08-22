@@ -1,9 +1,7 @@
-import json
 import platform
 from pathlib import Path
 
 from models.platform_type import PlatformType
-
 
 ## Config
 DIRS_FROM_ROOT = 2			            # How many directories away this script is from the root
@@ -16,11 +14,6 @@ def get_root_path() -> Path:
         path = path.parent
 
     return path
-
-
-def load_json(path: Path) -> dict:
-    with open(path) as fd:
-        return json.load(fd)
 
 
 def get_current_platform() -> PlatformType:

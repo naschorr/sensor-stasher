@@ -1,5 +1,4 @@
 import asyncio
-import os
 import subprocess
 import platform
 import uuid
@@ -15,7 +14,7 @@ from models.platform_type import PlatformType
 
 from utilities.configuration import Configuration
 from utilities.logging.logging import Logging
-from utilities.utilities import get_current_platform
+from utilities.misc import get_current_platform
 
 
 class SensorStasher:

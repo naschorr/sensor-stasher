@@ -8,7 +8,7 @@ from sensor.platforms.communicators.raspberrypi_communicator import RaspberryPiC
 from models.platform_type import PlatformType
 from sensor.exceptions.device_in_use_exception import DeviceInUseException
 from utilities.logging.logging import Logging
-from utilities.utilities import get_current_platform
+from utilities.misc import get_current_platform
 
 if (get_current_platform() == PlatformType.RASPBERRYPI):
     import smbus2   # type: ignore

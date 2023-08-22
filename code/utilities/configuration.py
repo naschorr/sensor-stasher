@@ -1,8 +1,9 @@
+import json
 from pathlib import Path
 from typing import Optional
 
 from models.config.sensor_stasher_config import SensorStasherConfig
-from utilities.utilities import get_root_path, load_json
+from utilities.misc import get_root_path
 
 
 class Configuration:
@@ -23,6 +24,11 @@ class Configuration:
         :return: Dictionary containing individual dev, prod, and root config items.
         :rtype: dict
         """
+
+        def load_json(path: Path) -> dict:
+            with open(path) as fd:
+                return json.load(fd)
+
 
         path = directory_path or get_root_path()
         config = {}

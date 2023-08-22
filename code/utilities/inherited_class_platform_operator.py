@@ -5,7 +5,7 @@ from sensor.platforms.communicators.platform_communicator import PlatformCommuni
 from sensor.platforms.sensors.platform_sensor import PlatformSensor
 from models.platform_type import PlatformType
 from sensor.exceptions.sensor_method_finder_platform_exception import SensorMethodFinderPlatformException
-from utilities.utilities import get_current_platform
+from utilities.misc import get_current_platform
 
 ## todo: Is there a better way to organize these one-shot generics?
 GenericPlatform = TypeVar('GenericPlatform', bound=PlatformSensor | PlatformCommunicator)

@@ -6,8 +6,7 @@ from logging.handlers import TimedRotatingFileHandler
 
 from models.platform_type import PlatformType
 from utilities.configuration import Configuration
-from utilities.utilities import get_root_path
-from utilities.utilities import get_current_platform
+from utilities.misc import get_root_path, get_current_platform
 from .log_level import LogLevel
 
 
