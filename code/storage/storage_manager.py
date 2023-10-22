@@ -13,7 +13,7 @@ class StorageManager:
 
 
     def register_storage(self, storage: StorageAdapter):
-        self.storage = storage(self.system_type, self.system_id)
+        self.storage = storage
 
 
     def store(self, data: List[SensorDatum]):

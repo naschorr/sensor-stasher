@@ -3,7 +3,7 @@ import inspect
 import contextlib
 from typing import Optional
 
-from common.services.sensor_discovery_service import SensorDiscoveryService
+from sensor.sensor_discoverer import SensorDiscoverer
 from models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.models.sensor_adapter import SensorAdapter
 from sensor.models.data.sensor_datum import SensorDatum
@@ -13,17 +13,17 @@ from utilities.logging.logging import Logging
 
 
 class SensorManager:
-    def __init__(self):
-        self.logger = initialize_logging(logging.getLogger(__name__))
 
-    def __init__(self, logger: Logging, configuration: SensorStasherConfig, sensors_configuration, sensor_discovery_service: SensorDiscoveryService):
+    ## Lifecycle
+
+    def __init__(self, logger: Logging, configuration: SensorStasherConfig, sensors_configuration, sensor_discoverer: SensorDiscoverer):
         self.logger = logger.initialize_logging(logging.getLogger(__name__))
         self.configuration = configuration
         self.sensors_configuration = sensors_configuration
-        self.sensor_discovery_service = sensor_discovery_service
+        self.sensor_discoverer = sensor_discoverer
 
         ## Sensor preparation
-        sensor_config_map = self.sensor_discovery_service.discover_sensors(self.configuration.sensors_directory_path)
+        sensor_config_map = self.sensor_discoverer.discover_sensors(self.configuration.sensors_directory_path)
         self._available_sensors: set[SensorAdapter] = set(list(sensor_config_map.keys()))
         self._registered_sensors: set[SensorAdapter] = self._initialize_sensors(sensor_config_map)
 
@@ -122,23 +122,23 @@ class SensorManager:
         sensor_data = []
 
         sensor: SensorAdapter
-        for sensor in self.sensors:
+        for sensor in self._registered_sensors:
             data = None
             try:
                 data = await sensor.read()
             except Exception as e:
                 ## Don't let a single failed sensor read stop the rest
-                self.logger.exception(f"Unable to read from sensor type: '{sensor.sensor_type}' with id: '{sensor.sensor_id}'", exc_info=e)
+                self.logger.exception(f"Unable to read from sensor type: '{sensor.sensor_name}' with id: '{sensor.sensor_id}'", exc_info=e)
                 continue
 
             if (data is not None):
                 if (isinstance(data, list)):
                     sensor_data.extend(data)
-                    self.logger.debug(f"Read from {sensor.sensor_type} sensor with id: '{sensor.sensor_id}': {[datum.to_dict() for datum in data]}")
+                    self.logger.debug(f"Read from {sensor.sensor_name} sensor with id: '{sensor.sensor_id}': {[datum.to_dict() for datum in data]}")
                 elif (isinstance(data, SensorDatum)):
                     sensor_data.append(data)
-                    self.logger.debug(f"Read from {sensor.sensor_type} sensor with id: '{sensor.sensor_id}': {data.to_dict()}")
+                    self.logger.debug(f"Read from {sensor.sensor_name} sensor with id: '{sensor.sensor_id}': {data.to_dict()}")
             else:
-                self.logger.warning(f"No data read from sensor type: '{sensor.sensor_type}' with id: '{sensor.sensor_id}'")
+                self.logger.warning(f"No data read from sensor type: '{sensor.sensor_name}' with id: '{sensor.sensor_id}'")
 
         return sensor_data

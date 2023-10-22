@@ -7,22 +7,15 @@ import logging
 from datetime import datetime, timedelta
 
 from sensor.sensor_manager import SensorManager
-from sensor.sensor_adapter import SensorAdapter
-from sensor.sensors.ds18b20.ds18b20_driver import DS18B20Driver
-from sensor.sensors.pms7003.pms7003_driver import PMS7003Driver
-from sensor.sensors.sht31.sht31_driver import SHT31Driver
-from sensor.sensors.test_sensor.test_sensor_driver import TestSensorDriver
-
+from sensor.models.sensor_adapter import SensorAdapter
 from storage.storage_manager import StorageManager
 from storage.storage_adapter import StorageAdapter
 from storage.clients.influx.influxdb_client import InfluxDBClient
-from common.services.sensor_discovery_service import SensorDiscoveryService
+from sensor.sensor_discoverer import SensorDiscoverer
 from models.config.sensor_stasher_config import SensorStasherConfig
-from models.platform_type import PlatformType
 from utilities.configuration.sensor_stasher_configuration import SensorStasherConfiguration
 from utilities.configuration.configuration import Configuration
 from utilities.logging.logging import Logging
-from utilities.misc import get_current_platform
 
 
 class SensorStasher:
@@ -35,24 +28,23 @@ class SensorStasher:
             log_backup_count = sensor_stasher_configuration.log_backup_count
         )
 
-        ## Config prep
-        sensor_discovery_service = SensorDiscoveryService()
-        global_configuration = Configuration(sensor_discovery_service)
-
-        ## Startup
+        ## Config
+        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
+        sensor_discoverer = SensorDiscoverer()
+        global_configuration = Configuration(sensor_discoverer)
         configuration: SensorStasherConfig = global_configuration.sensor_stasher_configuration
         sensors_configuration = global_configuration.sensors_configuration
-        self.logger = logger.initialize_logging(logging.getLogger(__name__))
 
-        self.sensor_poll_interval_seconds: int = config.get('sensor_poll_interval_seconds')
-        system_type = config.get('system_type')
+        self.sensor_poll_interval_seconds: int = configuration.sensor_poll_interval_seconds
+        system_type = configuration.system_type
         self.system_type: str = system_type if system_type is not None else platform.platform()
-        system_id = config.get('system_id')
+        system_id = configuration.system_id
         self.system_id: str = system_id if system_id is not None else self._get_system_id()
 
         self._loop = None
-        self.sensor_manager: SensorManager = SensorManager(logger, configuration, sensors_configuration, sensor_discovery_service)
+        self.sensor_manager: SensorManager = SensorManager(logger, configuration, sensors_configuration, sensor_discoverer)
         self.storage_manager: StorageManager = StorageManager(self.system_type, self.system_id)
+        self.storage_manager.register_storage(InfluxDBClient(self.system_type, self.system_id, configuration.influxdb))
 
         self.logger.debug(f"Initialized SensorStasher with system type: '{self.system_type}', system id: '{self.system_id}', and sensor poll interval: '{self.sensor_poll_interval_seconds}' seconds.")
 
@@ -133,13 +125,4 @@ class SensorStasher:
 
 if (__name__ == '__main__'):
     monitor = SensorStasher()
-    # monitor.register_sensor(DS18B20Driver, None)
-    # monitor.register_sensor(PMS7003Driver, None)
-    # monitor.register_sensor(SHT31Driver, None)
-    monitor.register_sensor(TestSensorDriver, 'test_sensor_0')
-    monitor.register_sensor(TestSensorDriver, 'test_sensor_1')
-    monitor.register_sensor(TestSensorDriver, 'test_sensor_2')
-    monitor.register_sensor(TestSensorDriver, 'test_sensor_3')
-    monitor.register_sensor(TestSensorDriver, 'test_sensor_4')
-    monitor.register_storage(InfluxDBClient)
     monitor.start_monitoring()

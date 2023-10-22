@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Optional
 
-from common.services.sensor_discovery_service import SensorDiscoveryService
+from sensor.sensor_discoverer import SensorDiscoverer
 from models.config.sensor_stasher_config import SensorStasherConfig
 from utilities.configuration.sensor_stasher_configuration import SensorStasherConfiguration
 from utilities.configuration.dynamic_sensor_configuration import DynamicSensorConfiguration
@@ -14,7 +14,7 @@ class Configuration:
 
     def __init__(
             self,
-            sensor_discovery_service: SensorDiscoveryService,
+            sensor_discoverer: SensorDiscoverer,
             config_directory_path: Optional[Path] = None,
             sensors_directory_path: Optional[Path] = None
         ):
@@ -23,7 +23,7 @@ class Configuration:
         self._sensor_stasher_config = None
 
         self._sensors_directory_path = sensors_directory_path or self.sensor_stasher_configuration.sensors_directory_path
-        self._sensors_config_loader = DynamicSensorConfiguration(sensor_discovery_service)
+        self._sensors_config_loader = DynamicSensorConfiguration(sensor_discoverer)
         self._sensors_config = None
 
     ## Properties

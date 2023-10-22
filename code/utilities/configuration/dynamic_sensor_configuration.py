@@ -1,7 +1,7 @@
 from pathlib import Path
 import pydantic
 
-from common.services.sensor_discovery_service import SensorDiscoveryService
+from sensor.sensor_discoverer import SensorDiscoverer
 from sensor.models.config.sensor_config import SensorConfig
 from sensor.models.sensor_adapter import SensorAdapter
 from utilities.configuration.hierarchical_configuration import HierarchicalConfiguration
@@ -11,8 +11,8 @@ from utilities.misc import get_root_path
 class DynamicSensorConfiguration(HierarchicalConfiguration):
     ## Lifecycle
 
-    def __init__(self, sensor_discovery_service: SensorDiscoveryService):
-        self.sensor_discovery_service = sensor_discovery_service
+    def __init__(self, sensor_discoverer: SensorDiscoverer):
+        self.sensor_discoverer = sensor_discoverer
 
 
     def _build_pydantic_config_model_args_for_sensors(self, sensor_config_map: dict[SensorAdapter, SensorConfig]) -> dict:
@@ -40,7 +40,7 @@ class DynamicSensorConfiguration(HierarchicalConfiguration):
         Builds a pydantic model to store configuration options for platform specific sensors.
         """
 
-        sensor_config_map = self.sensor_discovery_service.discover_sensors(sensors_directory_path)
+        sensor_config_map = self.sensor_discoverer.discover_sensors(sensors_directory_path)
 
         return pydantic.create_model(
             "DynamicSensorConfiguration",

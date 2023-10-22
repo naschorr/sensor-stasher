@@ -1,10 +1,10 @@
 from abc import ABC
 
-from ..platform_base import PlatformBase
+from .platform_config import PlatformConfig
 from models.platform_type import PlatformType
 
 
-class WindowsConfig(PlatformBase, ABC):
+class WindowsConfig(PlatformConfig, ABC):
 
     ## Statics
 

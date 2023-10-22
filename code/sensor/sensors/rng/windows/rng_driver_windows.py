@@ -15,7 +15,7 @@ class RNGDriverWindows(RNGDriver, WindowsSensor):
 
         self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
-        self.sensor_id = self.sensor_id + configuration.sensor_id_affix
+        self.sensor_id_affix = configuration.sensor_id_affix
         self.max_value = configuration.maximum
         self.min_value = configuration.minimum
 
@@ -27,7 +27,7 @@ class RNGDriverWindows(RNGDriver, WindowsSensor):
         return [
             RNGDatum(
                 SensorType.MISC,
-                self.sensor_id,
+                self.sensor_id + (self.sensor_id_affix or ""),
                 self.generate_random_number(self.min_value, self.max_value)
             )
         ]

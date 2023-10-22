@@ -1,10 +1,10 @@
 from abc import ABC
 
-from ..platform_base import PlatformBase
+from .platform_config import PlatformConfig
 from models.platform_type import PlatformType
 
 
-class RaspberryPiConfig(PlatformBase, ABC):
+class RaspberryPiConfig(PlatformConfig, ABC):
 
     ## Statics
 

@@ -10,12 +10,13 @@ from sensor.models.sensor_adapter import SensorAdapter
 from sensor.models.config.sensor_config import SensorConfig
 from sensor.platforms.platform_manager import PlatformManager
 from sensor.platforms.sensors.platform_sensor import PlatformSensor
+from sensor.platforms.configurations.platform_config import PlatformConfig
 from utilities.misc import get_current_platform
 from utilities.logging.logging import Logging
 
 
 ## todo: cache discovered sensors, and inject this service vs instantiate it every time
-class SensorDiscoveryService:
+class SensorDiscoverer:
     ## Lifecycle
 
     def __init__(self):
@@ -28,6 +29,11 @@ class SensorDiscoveryService:
         return PlatformManager.get_platform_sensor(current_platform)
 
 
+    def _get_supported_platform_config(self) -> type[PlatformConfig]:
+        current_platform = get_current_platform()
+        return PlatformManager.get_platform_config(current_platform)
+
+
     def _find_implementation_class(self, directory: Path, base_class: list[type]) -> Optional[type]:
         ## todo: we don't need to add the directory to the path every time, just once at the beginning and then remove
         ## it if nothing was found
@@ -38,7 +44,13 @@ class SensorDiscoveryService:
 
             ## Tentative import
             sys.path.append(str(file.parent))
-            candidate_module = importlib.import_module(file.stem)
+            try:
+                candidate_module = importlib.import_module(file.stem)
+            except:
+                ## todo remove this once all sensors have been ported over
+                self.logger.debug(f"Unable to import module: {file.stem}")
+                sys.path.remove(str(file.parent))
+                continue
 
             ## Does this implementation class inherit from the expected base class(es)?
             implementation = None
@@ -97,6 +109,7 @@ class SensorDiscoveryService:
 
         sensor_config_map = {}
         supported_platform_sensor = self._get_supported_platform_sensor()
+        supported_platform_config = self._get_supported_platform_config()
 
         sensor_directory: Path
         for sensor_directory in sensors_directory_path.iterdir():
@@ -136,10 +149,9 @@ class SensorDiscoveryService:
                 )
 
                 if (platform_driver_class is not None and root_configuration_class is not None):
-                    ## todo: same as above, but for configuration.
                     platform_configuration_class = self._find_implementation_class(
                         platform_directory,
-                        base_class=[SensorConfig, supported_platform_sensor]
+                        base_class=[SensorConfig, supported_platform_config]
                     )
                     break
 
