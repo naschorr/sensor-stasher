@@ -7,7 +7,7 @@ from sensor.models.config.sensor_config import SensorConfig
 
 class SensorAdapter(ABC):
     @abstractmethod
-    def __init__(self, configuration: Optional[SensorConfig]):
+    def __init__(self, configuration: SensorConfig):
         pass
 
     ## Properties

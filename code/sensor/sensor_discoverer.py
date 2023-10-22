@@ -78,10 +78,7 @@ class SensorDiscoverer:
         platform specific sensor drivers to their configuration classes. In this case, "platform specific" refers to
         logic that's only relevant to the platform running the code. A sensor designed to use the GPIO pins on a
         Raspberry Pi doesn't really have an analog on a normal Windows based machine. If a sensor doesn't expose a
-        driver for your current platform, then no worries, the sensor simply will simply be ignored. Note that if a
-        platform specific configuration isn't available, it'll defer to the generic sensor configuration, or even None
-        if no configuration is available. That said, the sensor driver itself must support an `Optional` configuration
-        argument in the None configuration case.
+        driver for your current platform, then no worries, the sensor simply will simply be ignored.
 
         Here's a very simple example of what the sensors directory might look like:
         sensors/
@@ -104,7 +101,8 @@ class SensorDiscoverer:
         Note that there aren't any hard requirements for the names of the files or directories, but rather that the
         classes themselves inherit from the expected base classes. Some sensor driver calling itself
         "MySuperCoolSensorDriverForWindows" will only be discovered as a sensor driver if it inherits from
-        `SensorAdapter` somewhere, and `WindowsSensor`
+        `SensorAdapter` somewhere, and `WindowsSensor`. It's associated configuration class would have to inherit from 
+        `SensorConfig` and `WindowsConfig`.
         """
 
         sensor_config_map = {}

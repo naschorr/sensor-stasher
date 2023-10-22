@@ -77,21 +77,28 @@ class SensorManager:
         ## Extract the parameters used to instantiate the driver class
         parameters = [parameter for name, parameter in inspect.signature(driver_class.__init__).parameters.items()]
 
-        ## Less than two parameters? It can't have a `configuration` parameter.
-        if (len(parameters) < 2):
-            return driver_class() # type: ignore
-        ## What if it does (potentially) have the expected parameters?
-        elif (len(parameters) == 2):
-            ## Determine if the driver class requires configuration, and instantiate it
-            if (configuration is not None):
-                return driver_class(configuration) # type: ignore
-            elif (configuration is None and parameters[1].annotation is Optional):
-                return driver_class() # type: ignore
-            else:
-                raise SensorInitException(f"No configuration file provided with a non-optional configuration parameter for sensor: {driver_class.sensor_name}")
-        ## Otherwise, something's gone wrong
-        else:
-            raise SensorInitException(f"Invalid number of parameters for sensor: {driver_class.sensor_name}")
+        ## Does it have the wrong number of parameters?
+        if (len(parameters) != 2):
+            raise SensorInitException(f"Invalid number of parameters for sensor: {driver_class.__name__}")
+
+        ## Does it have the expected number of parameters?
+        if (len(parameters) == 2):
+            ## Make sure we've got a configuration class to work with
+            if (configuration is None):
+                raise SensorInitException(f"No configuration file provided for sensor: {driver_class.__name__}")
+
+            ## Are the parameters of the expected type? (Don't try and instantiate a sensor that's expecting an int)
+            if (
+                    parameters[1].annotation is None or
+                    (
+                        parameters[1].annotation is not None and
+                        not issubclass(parameters[1].annotation, SensorConfig)
+                    )
+            ):
+                raise SensorInitException(f"Invalid parameter type for sensor: {driver_class.__name__}, it must inherit from {SensorConfig.__name__} and not {parameters[1].annotation.__name__}")
+            
+            ## We're all clear to instantiate
+            return driver_class(configuration) # type: ignore
 
 
     def _initialize_sensors(self, sensor_config_map: dict[SensorAdapter, SensorConfig]) -> set[SensorAdapter]:
@@ -108,7 +115,7 @@ class SensorManager:
                 self.logger.info(f"Successfully initialized sensor: '{sensor.__class__.__name__}' with id: {sensor.sensor_id}")
             except SensorInitException as e:
                 ## Couldn't instantiate? No worries, just ignore it and move on
-                self.logger.warn(f"Unable to initialize sensor: '{driver_class}'")
+                self.logger.warn(f"Unable to initialize sensor: '{driver_class.__name__}' - {e}")
                 continue
 
         return sensors

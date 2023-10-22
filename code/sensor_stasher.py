@@ -80,26 +80,30 @@ class SensorStasher:
     async def _process_sensor_data_loop(self):
         while (True):
             sensor_data = await self.sensor_manager.accumulate_all_sensor_data()
-            active_sensor_ids = {sensor_datum.metadata['sensor_id']: sensor_datum for sensor_datum in sensor_data}
-            self.logger.debug(
-                f"Retrieved {len(sensor_data)} data point{'s' if len(sensor_data) != 1 else ''} from " +
-                f"{len(active_sensor_ids)} sensor{'s' if len(active_sensor_ids) != 1 else ''}."
-            )
 
-            self.storage_manager.store(sensor_data)
-            self.logger.debug(
-                f"Stored {len(sensor_data)} data point{'s' if len(sensor_data) != 1 else ''} inside " +
-                f"{self.storage_manager.storage.storage_type}."
-            )
-
-            ## DEBUG level has more detailed info, but offer up a simplified version for less intense log levels
-            if (self.logger.level == logging.INFO):
-                self.logger.info(
-                    f"Retrieved and stored {len(sensor_data)} data point{'s' if len(sensor_data) != 1 else ''} " +
-                    f"from {len(active_sensor_ids)} sensor{'s' if len(active_sensor_ids) != 1 else ''} " +
-                    f"inside {self.storage_manager.storage.storage_type}. " +
-                    f"Will now sleep for {self.sensor_poll_interval_seconds} seconds."
+            if (not sensor_data):
+                self.logger.debug("No sensor data retrieved, nothing will be stored")
+            else:
+                active_sensor_ids = {sensor_datum.metadata['sensor_id']: sensor_datum for sensor_datum in sensor_data}
+                self.logger.debug(
+                    f"Retrieved {len(sensor_data)} data point{'s' if len(sensor_data) != 1 else ''} from " +
+                    f"{len(active_sensor_ids)} sensor{'s' if len(active_sensor_ids) != 1 else ''}."
                 )
+
+                self.storage_manager.store(sensor_data)
+                self.logger.debug(
+                    f"Stored {len(sensor_data)} data point{'s' if len(sensor_data) != 1 else ''} inside " +
+                    f"{self.storage_manager.storage.storage_type}."
+                )
+
+                ## DEBUG level has more detailed info, but offer up a simplified version for less intense log levels
+                if (self.logger.level == logging.INFO):
+                    self.logger.info(
+                        f"Retrieved and stored {len(sensor_data)} data point{'s' if len(sensor_data) != 1 else ''} " +
+                        f"from {len(active_sensor_ids)} sensor{'s' if len(active_sensor_ids) != 1 else ''} " +
+                        f"inside {self.storage_manager.storage.storage_type}. " +
+                        f"Will now sleep for {self.sensor_poll_interval_seconds} seconds."
+                    )
 
             self.logger.debug(
                 f"Sleeping for {self.sensor_poll_interval_seconds} seconds, next poll starts at: " +

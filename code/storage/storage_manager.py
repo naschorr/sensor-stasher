@@ -17,7 +17,12 @@ class StorageManager:
 
 
     def store(self, data: List[SensorDatum]):
+        ## Can't store data without a place to store it
         if (self.storage is None):
             raise RuntimeError("No storage adapter registered")
+        
+        ## No data to store? No worries, just skip this iteration
+        if (not data):
+            return
 
         self.storage.store(data)
