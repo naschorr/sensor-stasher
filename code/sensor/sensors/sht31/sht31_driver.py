@@ -11,7 +11,7 @@ if (sys.platform.startswith('linux')):
     import smbus
 
 from sensor.sensor_adapter import SensorAdapter
-from sensor.sensor_datum import SensorDatum
+from sensor.models.data.sensor_datum import SensorDatum
 from .sht31_datum import SHT31TemperatureDatum, SHT31HumidityDatum
 from utilities import load_config, initialize_logging
 

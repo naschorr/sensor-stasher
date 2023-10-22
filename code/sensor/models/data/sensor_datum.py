@@ -1,5 +1,4 @@
 import datetime
-from typing import Dict
 
 from sensor.models.data.data_type.data_type import DataType
 
@@ -18,7 +17,7 @@ class SensorDatum:
         return str(self.__dict__)
 
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         output = self.__dict__.copy()
         ## Don't expose the metadata in the output dict to be stored in the database
         del output["metadata"]

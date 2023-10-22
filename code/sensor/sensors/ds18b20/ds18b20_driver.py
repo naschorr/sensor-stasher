@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List
 
 from sensor.sensor_adapter import SensorAdapter
-from sensor.sensor_datum import SensorDatum
+from sensor.models.data.sensor_datum import SensorDatum
 from .ds18b20_datum import DS18B20Datum
 from utilities import load_config, initialize_logging
 
