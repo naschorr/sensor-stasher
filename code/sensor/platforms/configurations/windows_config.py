@@ -1,10 +1,11 @@
 from abc import ABC
 
-from sensor.platforms.sensors.platform_sensor import PlatformSensor
+from ..platform_base import PlatformBase
 from models.platform_type import PlatformType
 
 
-class WindowsSensor(PlatformSensor, ABC):
+class WindowsConfig(PlatformBase, ABC):
+
     ## Statics
 
     @staticmethod

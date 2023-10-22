@@ -1,17 +1,12 @@
 from typing import Callable
 from abc import ABC, abstractmethod
 
-from models.platform_type import PlatformType
+from ..platform_base import PlatformBase
 
 
-class PlatformCommunicator(ABC):
+class PlatformCommunicator(PlatformBase, ABC):
+
     ## Statics
-
-    @staticmethod
-    @abstractmethod
-    def get_platform_type() -> PlatformType:
-        pass
-
 
     @staticmethod
     @abstractmethod

@@ -1,11 +1,9 @@
 import logging
 import inspect
-import importlib
-import sys
 import contextlib
 from typing import Optional
-from pathlib import Path
 
+from common.services.sensor_discovery_service import SensorDiscoveryService
 from models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.models.sensor_adapter import SensorAdapter
 from sensor.models.data.sensor_datum import SensorDatum
@@ -15,18 +13,19 @@ from utilities.logging.logging import Logging
 
 
 class SensorManager:
-    ## Lifecycle
+    def __init__(self):
+        self.logger = initialize_logging(logging.getLogger(__name__))
 
-    def __init__(self, configuration: SensorStasherConfig):
-        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
-
-        ## Configuration
+    def __init__(self, logger: Logging, configuration: SensorStasherConfig, sensors_configuration, sensor_discovery_service: SensorDiscoveryService):
+        self.logger = logger.initialize_logging(logging.getLogger(__name__))
         self.configuration = configuration
+        self.sensors_configuration = sensors_configuration
+        self.sensor_discovery_service = sensor_discovery_service
 
         ## Sensor preparation
-        sensor_and_config_data = self._discover_sensors(self.configuration.sensors_directory_path)
-        self._available_sensors: set[SensorAdapter] = {sensor for sensor, _ in sensor_and_config_data}
-        self._registered_sensors: set[SensorAdapter] = self._initialize_sensors(sensor_and_config_data)
+        sensor_config_map = self.sensor_discovery_service.discover_sensors(self.configuration.sensors_directory_path)
+        self._available_sensors: set[SensorAdapter] = set(list(sensor_config_map.keys()))
+        self._registered_sensors: set[SensorAdapter] = self._initialize_sensors(sensor_config_map)
 
         self.logger.info(f"Initialized {len(self._registered_sensors)} of {len(self._available_sensors)} sensors.")
 
@@ -43,70 +42,13 @@ class SensorManager:
 
     ## Methods
 
-    def _discover_sensors(self, sensors_directory_path: Path) -> set[tuple[SensorAdapter, SensorConfig]]:
-        """
-        Discover all available sensors by traversing the sensors directory, and looking for driver classes (that inherit
-        from the base SensorAdapter class) and configuration classes (that inherit from the base SensorConfig class).
-        Pair up a corresponding driver and configuration class, and save them for future initialization.
-        """
-
-        sensor_and_config_data = set()
-
-        sensor_directory: Path
-        for sensor_directory in sensors_directory_path.iterdir():
-            ## Make sure we're only looking at directories
-            if (not sensor_directory.is_dir()):
-                continue
-
-            driver_class = None
-            configuration_class = None
-
-            ## Look at the .py files in the sensor_directory and determine if they are sensors (i.e. they inherit from
-            ## SensorAdapter). Kudos to https://stackoverflow.com/a/55067404 for the slick class check
-            sensor_file: Path
-            for sensor_file in sensor_directory.iterdir():
-                if (sensor_file.suffix != ".py"):
-                    continue
-
-                ## Tentative import
-                sys.path.append(str(sensor_directory))
-                candidate_module = importlib.import_module(sensor_file.stem)
-
-                cls_found = False
-                for _, cls in inspect.getmembers(candidate_module, inspect.isclass):
-                    ## Find the driver class
-                    if (issubclass(cls, SensorAdapter) and cls is not SensorAdapter and cls.__module__ == candidate_module.__name__):
-                        driver_class = cls
-                        cls_found = True
-                        break
-                    ## Find the configuration class
-                    elif (issubclass(cls, SensorConfig) and cls is not SensorConfig and cls.__module__ == candidate_module.__name__):
-                        configuration_class = cls
-                        cls_found = True
-                        break
-
-                ## Clean up the module if it's not what we're looking for and start over with the next file
-                if (not cls_found):
-                    del candidate_module
-                    sys.path.remove(str(sensor_directory))
-                    continue
-
-            ## Couldn't find the driver class? No problem, just move on to the next directory
-            if (driver_class is None):
-                continue
-
-            sensor_and_config_data.add((driver_class, configuration_class))
-
-        return sensor_and_config_data
-
-
     def _sensor_configuration_retriever(self, sensor_config: SensorConfig) -> Optional[SensorConfig]:
         """
         Attempts to find a configuration property with the same type as the provided sensor configuration class.
         For example: the PMS7003Config sensor config would yield the pms7003 property of the Configuration class.
         """
 
-        for _, cls in inspect.getmembers(self.configuration):
+        for _, cls in inspect.getmembers(self.sensors_configuration):
             with contextlib.suppress(TypeError):
                 ## todo: Improve this. `isinstance` wasn't really playing nice for the following:
                 ## sensor_config: <class 'ds18b20_config.DS18B20Config'> and
@@ -137,14 +79,14 @@ class SensorManager:
 
         ## Less than two parameters? It can't have a `configuration` parameter.
         if (len(parameters) < 2):
-            return driver_class()
+            return driver_class() # type: ignore
         ## What if it does (potentially) have the expected parameters?
         elif (len(parameters) == 2):
             ## Determine if the driver class requires configuration, and instantiate it
             if (configuration is not None):
-                return driver_class(configuration)
+                return driver_class(configuration) # type: ignore
             elif (configuration is None and parameters[1].annotation is Optional):
-                return driver_class()
+                return driver_class() # type: ignore
             else:
                 raise SensorInitException(f"No configuration file provided with a non-optional configuration parameter for sensor: {driver_class.sensor_name}")
         ## Otherwise, something's gone wrong
@@ -152,14 +94,14 @@ class SensorManager:
             raise SensorInitException(f"Invalid number of parameters for sensor: {driver_class.sensor_name}")
 
 
-    def _initialize_sensors(self, sensor_and_config_data: set[tuple[SensorAdapter, SensorConfig]]) -> set[SensorAdapter]:
+    def _initialize_sensors(self, sensor_config_map: dict[SensorAdapter, SensorConfig]) -> set[SensorAdapter]:
         """
         Initialize the available sensors, and inject the relevant configuration property into them (if it exists). Note
         that issues with sensor initialization won't stop the rest from initializing.
         """
 
         sensors = set()
-        for driver_class, configuration_class in sensor_and_config_data:
+        for driver_class, configuration_class in sensor_config_map.items():
             try:
                 sensor = self._instantiate_sensor_driver(driver_class, configuration_class)
                 sensors.add(sensor)
@@ -179,25 +121,24 @@ class SensorManager:
 
         sensor_data = []
 
-        for sensor in self.registered_sensors:
+        sensor: SensorAdapter
+        for sensor in self.sensors:
             data = None
             try:
                 data = await sensor.read()
             except Exception as e:
                 ## Don't let a single failed sensor read stop the rest
-                self.logger.exception(f"Unable to read from sensor: '{sensor.sensor_name}' with id: '{sensor.sensor_id}'", exc_info=e)
+                self.logger.exception(f"Unable to read from sensor type: '{sensor.sensor_type}' with id: '{sensor.sensor_id}'", exc_info=e)
                 continue
 
-            ## Process the data (or lack thereof) returned from the sensor
-            if (data is None):
-                self.logger.warning(f"No data read from sensor: '{sensor.sensor_name}' with id: '{sensor.sensor_id}'")
-                continue
-
-            if (isinstance(data, list)):
-                sensor_data.extend(data)
-                self.logger.debug(f"Read from sensor: {sensor.sensor_name} with id: '{sensor.sensor_id}': {[datum.to_dict() for datum in data]}")
-            elif (isinstance(data, SensorDatum)):
-                sensor_data.append(data)
-                self.logger.debug(f"Read from sensor: {sensor.sensor_name} with id: '{sensor.sensor_id}': {data.to_dict()}")
+            if (data is not None):
+                if (isinstance(data, list)):
+                    sensor_data.extend(data)
+                    self.logger.debug(f"Read from {sensor.sensor_type} sensor with id: '{sensor.sensor_id}': {[datum.to_dict() for datum in data]}")
+                elif (isinstance(data, SensorDatum)):
+                    sensor_data.append(data)
+                    self.logger.debug(f"Read from {sensor.sensor_type} sensor with id: '{sensor.sensor_id}': {data.to_dict()}")
+            else:
+                self.logger.warning(f"No data read from sensor type: '{sensor.sensor_type}' with id: '{sensor.sensor_id}'")
 
         return sensor_data

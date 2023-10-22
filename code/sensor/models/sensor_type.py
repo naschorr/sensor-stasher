@@ -9,3 +9,4 @@ class SensorType(str, Enum):
     SERIAL = "serial"
     USB = "usb"
     HTTP = "http"
+    MISC = "misc"

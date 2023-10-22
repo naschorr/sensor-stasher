@@ -1,4 +1,5 @@
 import asyncio
+import os
 import subprocess
 import platform
 import uuid
@@ -6,28 +7,51 @@ import logging
 from datetime import datetime, timedelta
 
 from sensor.sensor_manager import SensorManager
+from sensor.sensor_adapter import SensorAdapter
+from sensor.sensors.ds18b20.ds18b20_driver import DS18B20Driver
+from sensor.sensors.pms7003.pms7003_driver import PMS7003Driver
+from sensor.sensors.sht31.sht31_driver import SHT31Driver
+from sensor.sensors.test_sensor.test_sensor_driver import TestSensorDriver
+
 from storage.storage_manager import StorageManager
 from storage.storage_adapter import StorageAdapter
 from storage.clients.influx.influxdb_client import InfluxDBClient
+from common.services.sensor_discovery_service import SensorDiscoveryService
 from models.config.sensor_stasher_config import SensorStasherConfig
 from models.platform_type import PlatformType
-
-from utilities.configuration import Configuration
+from utilities.configuration.sensor_stasher_configuration import SensorStasherConfiguration
+from utilities.configuration.configuration import Configuration
 from utilities.logging.logging import Logging
 from utilities.misc import get_current_platform
 
 
 class SensorStasher:
     def __init__(self):
-        configuration: SensorStasherConfig = Configuration.load_configuration()
-        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
+        ## Preconfig
+        sensor_stasher_configuration = SensorStasherConfiguration().load_configuration()
+        logger = Logging(
+            log_level = sensor_stasher_configuration.log_level,
+            log_path = sensor_stasher_configuration.log_path,
+            log_backup_count = sensor_stasher_configuration.log_backup_count
+        )
 
-        self.sensor_poll_interval_seconds = configuration.sensor_poll_interval_seconds
-        self.system_type = configuration.system_type if configuration.system_type is not None else platform.platform()
-        self.system_id: str = configuration.system_id if configuration.system_id is not None else self._get_system_id()
+        ## Config prep
+        sensor_discovery_service = SensorDiscoveryService()
+        global_configuration = Configuration(sensor_discovery_service)
+
+        ## Startup
+        configuration: SensorStasherConfig = global_configuration.sensor_stasher_configuration
+        sensors_configuration = global_configuration.sensors_configuration
+        self.logger = logger.initialize_logging(logging.getLogger(__name__))
+
+        self.sensor_poll_interval_seconds: int = config.get('sensor_poll_interval_seconds')
+        system_type = config.get('system_type')
+        self.system_type: str = system_type if system_type is not None else platform.platform()
+        system_id = config.get('system_id')
+        self.system_id: str = system_id if system_id is not None else self._get_system_id()
 
         self._loop = None
-        self.sensor_manager: SensorManager = SensorManager(configuration)
+        self.sensor_manager: SensorManager = SensorManager(logger, configuration, sensors_configuration, sensor_discovery_service)
         self.storage_manager: StorageManager = StorageManager(self.system_type, self.system_id)
 
         self.logger.debug(f"Initialized SensorStasher with system type: '{self.system_type}', system id: '{self.system_id}', and sensor poll interval: '{self.sensor_poll_interval_seconds}' seconds.")
@@ -37,10 +61,10 @@ class SensorStasher:
         system_id = None
 
         try:
-            if (get_current_platform() ==  PlatformType.WINDOWS):
+            if ('nt' in os.name):
                 ## Thanks to https://stackoverflow.com/a/66953913/1724602
                 system_id = str(subprocess.check_output('wmic csproduct get uuid'), 'utf-8').split('\n')[1].strip()
-            elif (get_current_platform() == PlatformType.RASPBERRYPI):
+            else:
                 ## Thanks to https://stackoverflow.com/a/37775731/1724602
                 system_id = str(subprocess.check_output(['cat', '/var/lib/dbus/machine-id']), 'utf-8').strip()
         except Exception as e:
@@ -51,6 +75,10 @@ class SensorStasher:
             system_id = str(uuid.getnode())
 
         return system_id
+
+
+    def register_sensor(self, sensor: SensorAdapter, sensor_id: str):
+        self.sensor_manager.register_sensor(sensor, sensor_id)
 
 
     def register_storage(self, storage: StorageAdapter):
@@ -93,19 +121,25 @@ class SensorStasher:
         if (self._loop is not None):
             self.stop_monitoring()
 
-        self._loop = asyncio.new_event_loop()
+        self._loop = asyncio.get_event_loop()
         self._loop.run_until_complete(self._process_sensor_data_loop())
 
 
     def stop_monitoring(self):
-        ## Make sure we've got an event loop to stop
-        if (self._loop is not None):
-            self._loop.stop()
-            self._loop.close()
-            self._loop = None
+        self._loop.stop()
+        self._loop.close()
+        self._loop = None
 
 
 if (__name__ == '__main__'):
     monitor = SensorStasher()
+    # monitor.register_sensor(DS18B20Driver, None)
+    # monitor.register_sensor(PMS7003Driver, None)
+    # monitor.register_sensor(SHT31Driver, None)
+    monitor.register_sensor(TestSensorDriver, 'test_sensor_0')
+    monitor.register_sensor(TestSensorDriver, 'test_sensor_1')
+    monitor.register_sensor(TestSensorDriver, 'test_sensor_2')
+    monitor.register_sensor(TestSensorDriver, 'test_sensor_3')
+    monitor.register_sensor(TestSensorDriver, 'test_sensor_4')
     monitor.register_storage(InfluxDBClient)
     monitor.start_monitoring()

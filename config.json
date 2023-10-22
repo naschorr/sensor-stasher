@@ -1,15 +1,8 @@
 {
+    "system_type"                           : null,
+    "system_id"                             : null,
     "sensor_poll_interval_seconds"          : 60,
-    "log_level"                             : "warning",
-
-    "ds18b20": {
-        "onewire_device_path": "/sys/bus/w1/devices/28-*/w1_slave"
-    },
-    "pms7003": {
-        "serial_device_path": "/dev/serial0"
-    },
-    "sht31": {
-        "i2c_bus": 1,
-        "i2c_address": "0x44"
-    }
+    "log_level"                             : "DEBUG",
+    "log_path"                              : "",
+    "log_backup_count"                      : 7
 }

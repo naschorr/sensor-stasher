@@ -3,23 +3,37 @@ import datetime
 import os
 from pathlib import Path
 from logging.handlers import TimedRotatingFileHandler
+from typing import Optional
 
 from models.platform_type import PlatformType
-from utilities.configuration import Configuration
 from utilities.misc import get_root_path, get_current_platform
 from .log_level import LogLevel
 
 
 class Logging:
+
+    ## Statics
+
+    LOG_LEVEL = LogLevel.DEBUG
+    LOG_PATH = get_root_path() / 'logs'
+    LOG_BACKUP_COUNT = 7
+
+    ## Lifecycle
+
+    def __init__(self, *, log_level: Optional[LogLevel] = None, log_path: Optional[Path] = None, log_backup_count: Optional[int] = None):
+        Logging.LOG_LEVEL = log_level
+        Logging.LOG_PATH = log_path
+        Logging.LOG_BACKUP_COUNT = log_backup_count
+
+    ## Methods
+
     @staticmethod
     def initialize_logging(logger):
-        config = Configuration.load_configuration()
-
         FORMAT = "%(asctime)s - %(module)s - %(funcName)s - %(levelname)s - %(message)s"
         formatter = logging.Formatter(FORMAT)
         logging.basicConfig(format=FORMAT)
 
-        log_level = config.log_level
+        log_level = Logging.LOG_LEVEL
         if (log_level == LogLevel.DEBUG):
             logger.setLevel(logging.DEBUG)
         elif (log_level == LogLevel.INFO):
@@ -34,7 +48,7 @@ class Logging:
             logger.setLevel(logging.DEBUG)
 
         ## Get the directory containing the logs and make sure it exists, creating it if it doesn't
-        log_path = config.log_path
+        log_path = Logging.LOG_PATH
         if (log_path):
             log_path = Path(log_path)
         else:
@@ -54,7 +68,7 @@ class Logging:
                 removed_previous_logs = True
 
         ## Setup and add the timed rotating log handler to the logger
-        backup_count = config.log_backup_count  # Store a week's logs then start overwriting them
+        backup_count = Logging.LOG_BACKUP_COUNT  # Store a week's logs then start overwriting them
         log_handler = TimedRotatingFileHandler(str(log_file), when='midnight', interval=1, backupCount=backup_count)
         log_handler.setFormatter(formatter)
         logger.addHandler(log_handler)

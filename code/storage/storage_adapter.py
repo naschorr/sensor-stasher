@@ -1,15 +1,14 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from sensor.models.data.sensor_datum import SensorDatum
-from storage.models.storage_type import StorageType
+from sensor.sensor_datum import SensorDatum
 
 
 class StorageAdapter(ABC):
 
     @property
     @abstractmethod
-    def storage_type(self) -> StorageType:
+    def storage_type(self) -> str:
         pass
 
 

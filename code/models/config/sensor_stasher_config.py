@@ -5,8 +5,9 @@ from pydantic import BaseModel, Field, DirectoryPath
 from sensor.sensors.ds18b20.ds18b20_config import DS18B20Config
 from sensor.sensors.pms7003.pms7003_config import PMS7003Config
 from sensor.sensors.sht31.sht31_config import SHT31Config
+from sensor.sensors.rng.rng_config import RNGConfig
 from storage.clients.influx.influxdb_config import InfluxDBConfig
-from utilities.utilities import get_root_path
+from utilities.misc import get_root_path
 from utilities.logging.log_level import LogLevel
 
 
@@ -45,22 +46,27 @@ class SensorStasherConfig(BaseModel):
         description="The number of log files to keep."
     )
 
-    ## Sensor Configuration
-    ds18b20: Optional[DS18B20Config] = Field(
-        default=None,
-        title="DS18B20 Sensor",
-        description="Configuration for the DS18B20 temperature sensor."
-    )
-    pms7003: Optional[PMS7003Config] = Field(
-        default=None,
-        title="PMS7003 Sensor",
-        description="Configuration for the PMS7003 air quality sensor."
-    )
-    sht31: Optional[SHT31Config] = Field(
-        default=None,
-        title="SHT31 Sensor",
-        description="Configuration for the SHT31 temperature and humidity sensor."
-    )
+    # ## Sensor Configuration
+    # ds18b20: Optional[DS18B20Config] = Field(
+    #     default=None,
+    #     title="DS18B20 Sensor",
+    #     description="Configuration for the DS18B20 temperature sensor."
+    # )
+    # pms7003: Optional[PMS7003Config] = Field(
+    #     default=None,
+    #     title="PMS7003 Sensor",
+    #     description="Configuration for the PMS7003 air quality sensor."
+    # )
+    # sht31: Optional[SHT31Config] = Field(
+    #     default=None,
+    #     title="SHT31 Sensor",
+    #     description="Configuration for the SHT31 temperature and humidity sensor."
+    # )
+    # rng: Optional[RNGConfig] = Field(
+    #     default=None,
+    #     title="RNG Sensor",
+    #     description="Configuration for the RNG sensor."
+    # )
 
     ## Storage Configuration
     influxdb: Optional[InfluxDBConfig] = Field(
