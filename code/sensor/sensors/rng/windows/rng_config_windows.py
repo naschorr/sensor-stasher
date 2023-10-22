@@ -6,8 +6,8 @@ from sensor.platforms.configurations.windows_config import WindowsConfig
 
 
 class RNGConfigWindows(RNGConfig, WindowsConfig):
-    test: Optional[str] = Field(
-        title="Test",
-        description="Test",
-        default="test"
+    sensor_id_affix: Optional[str] = Field(
+        title="Sensor ID Affix",
+        description="String to affix to the sensor's ID",
+        default=None
     )
