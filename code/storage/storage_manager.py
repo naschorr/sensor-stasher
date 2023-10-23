@@ -1,28 +1,61 @@
-from typing import List
+import logging
+import pydantic
 
+from common.implementation_instantiator import ImplementationInstantiator
+from models.config.sensor_stasher_config import SensorStasherConfig
+from storage.storage_discoverer import StorageDiscoverer
+from storage.models.storage_adapter import StorageAdapter
 from sensor.models.data.sensor_datum import SensorDatum
-from storage.storage_adapter import StorageAdapter
+from utilities.logging.logging import Logging
 
 class StorageManager:
-    def __init__(self, system_type: str, system_id: str):
-        self.system_type = system_type
-        self.system_id = system_id
+    def __init__(
+            self,
+            logger: Logging,
+            configuration: SensorStasherConfig,
+            storage_clients_configuration: pydantic.BaseModel,
+            storage_discoverer: StorageDiscoverer,
+            implementation_instantiator: ImplementationInstantiator
+    ):
+        self.logger = logger.initialize_logging(logging.getLogger(__name__))
+        self.configuration = configuration
+        self.storage_clients_configuration = storage_clients_configuration
+        self.system_type = configuration.system_type
+        self.system_id = configuration.system_id
+        self.storage_discoverer = storage_discoverer
+        self.implementation_instantiator = implementation_instantiator
 
-        ## todo: Allow registering multiple storage adapters at once?
-        self.storage: StorageAdapter = None
+        ## Storage client preparation
+        storage_client_config_map = self.storage_discoverer.discover_storage_clients(self.configuration.storage_clients_directory_path)
+        self._available_storage_clients: set[StorageAdapter] = set(list(storage_client_config_map.keys()))
+        self._registered_storage_clients: set[StorageAdapter] = self.implementation_instantiator.instantiate_classes(
+            storage_client_config_map,
+            self.storage_clients_configuration
+        )
+
+        self.logger.info(f"Initialized {len(self._registered_storage_clients)} of {len(self._available_storage_clients)} storage clients.")
+
+    ## Properties
+
+    @property
+    def available_storage_clients(self) -> set[StorageAdapter]:
+        return self._available_storage_clients
 
 
-    def register_storage(self, storage: StorageAdapter):
-        self.storage = storage
+    @property
+    def registered_storage_clients(self) -> set[StorageAdapter]:
+        return self._registered_storage_clients
 
+    ## Methods
 
-    def store(self, data: List[SensorDatum]):
+    def store(self, data: list[SensorDatum]):
         ## Can't store data without a place to store it
-        if (self.storage is None):
-            raise RuntimeError("No storage adapter registered")
+        if (not self.registered_storage_clients):
+            raise RuntimeError("No storage adapters registered")
         
         ## No data to store? No worries, just skip this iteration
         if (not data):
             return
 
-        self.storage.store(data)
+        for storage_client in self.registered_storage_clients:
+            storage_client.store(data)

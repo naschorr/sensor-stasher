@@ -15,6 +15,8 @@ class DynamicSensorConfiguration(HierarchicalConfiguration):
         self.sensor_discoverer = sensor_discoverer
 
 
+    ## Methods
+
     def _build_pydantic_config_model_args_for_sensors(self, sensor_config_map: dict[SensorAdapter, SensorConfig]) -> dict:
         """
         Maps the sensor (by it's self assigned name, or failing that it's module name) to a tuple of type:

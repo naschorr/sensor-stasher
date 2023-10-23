@@ -6,12 +6,13 @@ import uuid
 import logging
 from datetime import datetime, timedelta
 
+from common.implementation_instantiator import ImplementationInstantiator
 from sensor.sensor_manager import SensorManager
 from sensor.models.sensor_adapter import SensorAdapter
-from storage.storage_manager import StorageManager
-from storage.storage_adapter import StorageAdapter
-from storage.clients.influx.influxdb_client import InfluxDBClient
 from sensor.sensor_discoverer import SensorDiscoverer
+from storage.storage_manager import StorageManager
+from storage.models.storage_adapter import StorageAdapter
+from storage.storage_discoverer import StorageDiscoverer
 from models.config.sensor_stasher_config import SensorStasherConfig
 from utilities.configuration.sensor_stasher_configuration import SensorStasherConfiguration
 from utilities.configuration.configuration import Configuration
@@ -31,9 +32,12 @@ class SensorStasher:
         ## Config
         self.logger = Logging.initialize_logging(logging.getLogger(__name__))
         sensor_discoverer = SensorDiscoverer()
-        global_configuration = Configuration(sensor_discoverer)
+        storage_discoverer = StorageDiscoverer()
+        global_configuration = Configuration(sensor_discoverer, storage_discoverer)
         configuration: SensorStasherConfig = global_configuration.sensor_stasher_configuration
         sensors_configuration = global_configuration.sensors_configuration
+        storage_clients_configuration = global_configuration.storage_client_configuration
+        implementation_instantiator = ImplementationInstantiator(logger, configuration)
 
         self.sensor_poll_interval_seconds: int = configuration.sensor_poll_interval_seconds
         system_type = configuration.system_type
@@ -43,13 +47,13 @@ class SensorStasher:
 
         self._loop = None
         self.sensor_manager: SensorManager = SensorManager(logger, configuration, sensors_configuration, sensor_discoverer)
-        self.storage_manager: StorageManager = StorageManager(self.system_type, self.system_id)
-        self.storage_manager.register_storage(InfluxDBClient(self.system_type, self.system_id, configuration.influxdb))
+        self.storage_manager: StorageManager = StorageManager(logger, configuration, storage_clients_configuration, storage_discoverer, implementation_instantiator)
 
         self.logger.debug(f"Initialized SensorStasher with system type: '{self.system_type}', system id: '{self.system_id}', and sensor poll interval: '{self.sensor_poll_interval_seconds}' seconds.")
 
 
     def _get_system_id(self) -> str:
+        ## todo: make sure this is getting sent to the storage_manager
         system_id = None
 
         try:
@@ -91,19 +95,7 @@ class SensorStasher:
                 )
 
                 self.storage_manager.store(sensor_data)
-                self.logger.debug(
-                    f"Stored {len(sensor_data)} data point{'s' if len(sensor_data) != 1 else ''} inside " +
-                    f"{self.storage_manager.storage.storage_type}."
-                )
-
-                ## DEBUG level has more detailed info, but offer up a simplified version for less intense log levels
-                if (self.logger.level == logging.INFO):
-                    self.logger.info(
-                        f"Retrieved and stored {len(sensor_data)} data point{'s' if len(sensor_data) != 1 else ''} " +
-                        f"from {len(active_sensor_ids)} sensor{'s' if len(active_sensor_ids) != 1 else ''} " +
-                        f"inside {self.storage_manager.storage.storage_type}. " +
-                        f"Will now sleep for {self.sensor_poll_interval_seconds} seconds."
-                    )
+                self.logger.debug(f"Stored {len(sensor_data)} data point{'s' if len(sensor_data) != 1 else ''}")
 
             self.logger.debug(
                 f"Sleeping for {self.sensor_poll_interval_seconds} seconds, next poll starts at: " +

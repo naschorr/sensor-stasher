@@ -2,26 +2,26 @@ import logging
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 
-from storage.storage_adapter import StorageAdapter
-from storage.clients.influx.influxdb_config import InfluxDBConfig
+from models.config.sensor_stasher_config import SensorStasherConfig
+from storage.models.storage_adapter import StorageAdapter
+from storage.models.storage_type import StorageType
+from storage.clients.influx_db.influx_db_config import InfluxDBConfig
 from sensor.models.data.sensor_datum import SensorDatum
-from utilities.configuration.configuration import Configuration
 from utilities.logging.logging import Logging
 
 
 class InfluxDBClient(StorageAdapter):
-    def __init__(self, system_type: str, system_id: str, configuration: InfluxDBConfig):
+    def __init__(self, sensor_stasher_configuration: SensorStasherConfig, influx_db_configuration: InfluxDBConfig):
         self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
         ## Config
-        self.url = str(configuration.url)
-        self.organization = configuration.organization
-        self.bucket = configuration.bucket
-        self.api_token = configuration.api_token
-
-        self.system_type = system_type
-        self.system_id = system_id
-        self._storage_type = 'InfluxDB'
+        self.system_type = sensor_stasher_configuration.system_type
+        self.system_id = sensor_stasher_configuration.system_id
+        self.url = str(influx_db_configuration.url)
+        self.organization = influx_db_configuration.organization
+        self.bucket = influx_db_configuration.bucket
+        self.api_token = influx_db_configuration.api_token
+        self._storage_type = StorageType.INFLUXDB
 
         self.client = influxdb_client.InfluxDBClient(url=self.url, token=self.api_token, org=self.organization)
         self.write_api = self.client.write_api(write_options=SYNCHRONOUS)
@@ -31,7 +31,7 @@ class InfluxDBClient(StorageAdapter):
     ## Properties
 
     @property
-    def storage_type(self) -> str:
+    def storage_type(self) -> StorageType:
         return self._storage_type
 
     ## Methods

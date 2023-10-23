@@ -21,6 +21,7 @@ class Logging:
     ## Lifecycle
 
     def __init__(self, *, log_level: Optional[LogLevel] = None, log_path: Optional[Path] = None, log_backup_count: Optional[int] = None):
+        ## todo: simplify log level configuration
         Logging.LOG_LEVEL = log_level
         Logging.LOG_PATH = log_path
         Logging.LOG_BACKUP_COUNT = log_backup_count

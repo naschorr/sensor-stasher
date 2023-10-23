@@ -1,11 +1,8 @@
 import logging
-import inspect
-import importlib
-import sys
 import os
-from typing import Optional
 from pathlib import Path
 
+from common.implementation_finder import ImplementationFinder
 from sensor.models.sensor_adapter import SensorAdapter
 from sensor.models.config.sensor_config import SensorConfig
 from sensor.platforms.platform_manager import PlatformManager
@@ -21,6 +18,7 @@ class SensorDiscoverer:
 
     def __init__(self):
         self.logger = Logging.initialize_logging(logging.getLogger(__name__))
+        self.implementation_finder = ImplementationFinder()
 
     ## Methods
 
@@ -32,44 +30,6 @@ class SensorDiscoverer:
     def _get_supported_platform_config(self) -> type[PlatformConfig]:
         current_platform = get_current_platform()
         return PlatformManager.get_platform_config(current_platform)
-
-
-    def _find_implementation_class(self, directory: Path, base_class: list[type]) -> Optional[type]:
-        ## todo: we don't need to add the directory to the path every time, just once at the beginning and then remove
-        ## it if nothing was found
-        for file in directory.iterdir():
-            ## Ignore non-Python files
-            if (file.suffix != ".py"):
-                continue
-
-            ## Tentative import
-            sys.path.append(str(file.parent))
-            try:
-                candidate_module = importlib.import_module(file.stem)
-            except:
-                ## todo remove this once all sensors have been ported over
-                self.logger.debug(f"Unable to import module: {file.stem}")
-                sys.path.remove(str(file.parent))
-                continue
-
-            ## Does this implementation class inherit from the expected base class(es)?
-            implementation = None
-            for _, cls in inspect.getmembers(candidate_module, inspect.isclass):
-                if (
-                        all(issubclass(cls, base) for base in base_class)   ## Must match ALL base classes
-                        and cls is not base_class
-                        and cls.__module__ == candidate_module.__name__
-                ):
-                    implementation = cls
-                    break
-
-            ## Clean up the module if it's not what we're looking for and start over with the next file
-            if (implementation is None):
-                del candidate_module
-                sys.path.remove(str(file.parent))
-                continue
-
-            return implementation
 
 
     def discover_sensors(self, sensors_directory_path: Path) -> dict[SensorAdapter, SensorConfig]:
@@ -125,8 +85,8 @@ class SensorDiscoverer:
             directory_path, platform_directories, _ = next(os.walk(sensor_directory)) # type: ignore
 
             ## Look for root level implementation classes
-            root_driver_class = self._find_implementation_class(Path(directory_path), base_class=[SensorAdapter])
-            root_configuration_class = self._find_implementation_class(Path(directory_path), base_class=[SensorConfig])
+            root_driver_class = self.implementation_finder.find_implementation_class(Path(directory_path), base_class=[SensorAdapter])
+            root_configuration_class = self.implementation_finder.find_implementation_class(Path(directory_path), base_class=[SensorConfig])
 
             ## Couldn't find the driver class? No problem, just move on to the next directory
             if (root_driver_class is None):
@@ -141,13 +101,13 @@ class SensorDiscoverer:
                 ## I've noticed issues where the builtin issubclass function doesn't correctly identify if the sub class
                 ## inherits from the base class. However it works as expected if I manually resolve the
                 ## root_driver_class. Weird.
-                platform_driver_class = self._find_implementation_class(
+                platform_driver_class = self.implementation_finder.find_implementation_class(
                     platform_directory,
                     base_class=[SensorAdapter, supported_platform_sensor]
                 )
 
                 if (platform_driver_class is not None and root_configuration_class is not None):
-                    platform_configuration_class = self._find_implementation_class(
+                    platform_configuration_class = self.implementation_finder.find_implementation_class(
                         platform_directory,
                         base_class=[SensorConfig, supported_platform_config]
                     )

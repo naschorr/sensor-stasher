@@ -1,6 +1,7 @@
 import logging
 import inspect
 import contextlib
+import pydantic
 from typing import Optional
 
 from sensor.sensor_discoverer import SensorDiscoverer
@@ -16,7 +17,13 @@ class SensorManager:
 
     ## Lifecycle
 
-    def __init__(self, logger: Logging, configuration: SensorStasherConfig, sensors_configuration, sensor_discoverer: SensorDiscoverer):
+    def __init__(
+            self,
+            logger: Logging,
+            configuration: SensorStasherConfig,
+            sensors_configuration: pydantic.BaseModel,
+            sensor_discoverer: SensorDiscoverer
+    ):
         self.logger = logger.initialize_logging(logging.getLogger(__name__))
         self.configuration = configuration
         self.sensors_configuration = sensors_configuration
@@ -63,7 +70,7 @@ class SensorManager:
         return None
 
 
-    def _instantiate_sensor_driver(self, driver_class: SensorAdapter, configuration_class: Optional[SensorConfig]) -> SensorAdapter:
+    def _instantiate_sensor_driver(self, driver_class: SensorAdapter, configuration_class: SensorConfig) -> SensorAdapter:
         """
         Handles instantiating the sensor driver from a given driver class and configuration class. Also attempts to
         gracefully handle missing configuration classes.

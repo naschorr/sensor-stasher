@@ -1,7 +1,9 @@
-from pydantic import BaseModel, Field, AnyUrl
+from pydantic import Field, AnyUrl
+
+from storage.models.config.storage_config import StorageConfig
 
 
-class InfluxDBConfig(BaseModel):
+class InfluxDBConfig(StorageConfig):
     url: AnyUrl = Field(
         description="The URL of your InfluxDB instance"
     )
