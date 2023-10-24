@@ -38,11 +38,6 @@ class SensorStasher:
         implementation_instantiator = ImplementationInstantiator(logger, configuration)
 
         self.sensor_poll_interval_seconds: int = configuration.sensor_poll_interval_seconds
-        system_type = configuration.system_type
-        self.system_type: str = system_type if system_type is not None else platform.platform()
-        system_id = configuration.system_id
-        self.system_id: str = system_id if system_id is not None else self._get_system_id()
-
         self._loop = None
         self.sensor_manager: SensorManager = SensorManager(
             logger,
@@ -59,28 +54,7 @@ class SensorStasher:
             implementation_instantiator
         )
 
-        self.logger.debug(f"Initialized SensorStasher with system type: '{self.system_type}', system id: '{self.system_id}', and sensor poll interval: '{self.sensor_poll_interval_seconds}' seconds.")
-
-
-    def _get_system_id(self) -> str:
-        ## todo: make sure this is getting sent to the storage_manager
-        system_id = None
-
-        try:
-            if (get_c):
-                ## Thanks to https://stackoverflow.com/a/66953913/1724602
-                system_id = str(subprocess.check_output('wmic csproduct get uuid'), 'utf-8').split('\n')[1].strip()
-            else:
-                ## Thanks to https://stackoverflow.com/a/37775731/1724602
-                system_id = str(subprocess.check_output(['cat', '/var/lib/dbus/machine-id']), 'utf-8').strip()
-        except Exception as e:
-            self.logger.error(f"Error during retrieval of system id: {e}")
-
-        if (system_id is None or len(system_id) == 0):
-            self.logger.warn("Unable to retrieve system id, using system's MAC address as fallback. Note that this may not be static or unique.")
-            system_id = str(uuid.getnode())
-
-        return system_id
+        self.logger.debug(f"Initialized SensorStasher with system type: '{configuration.system_type}', system id: '{configuration.system_id}', and sensor poll interval: '{self.sensor_poll_interval_seconds}' seconds.")
 
 
     async def _process_sensor_data_loop(self):

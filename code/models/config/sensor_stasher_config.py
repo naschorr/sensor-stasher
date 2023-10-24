@@ -1,3 +1,5 @@
+import uuid
+import platform
 from typing import Optional
 from pathlib import Path
 from pydantic import BaseModel, Field, DirectoryPath
@@ -8,12 +10,12 @@ from utilities.logging.log_level import LogLevel
 
 class SensorStasherConfig(BaseModel):
     system_type: Optional[str] = Field(
-        default=None,
+        default=platform.uname().system.lower(),
         description="The type of system this sensor is running on.",
         examples=["Raspberry Pi Zero 2 W", "Raspberry Pi 4 Model B", "Raspberry Pi 2 Model B"]
     )
     system_id: Optional[str] = Field(
-        default=None,
+        default=str(uuid.UUID(int=uuid.getnode())),
         description="The unique ID of the system this sensor is running on.",
         examples=["Living Room", "Bedroom", "Office 0", "Office 1"]
     )
