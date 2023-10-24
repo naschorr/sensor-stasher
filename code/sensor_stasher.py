@@ -85,14 +85,6 @@ class SensorStasher:
         return system_id
 
 
-    def register_sensor(self, sensor: SensorAdapter, sensor_id: str):
-        self.sensor_manager.register_sensor(sensor, sensor_id)
-
-
-    def register_storage(self, storage: StorageAdapter):
-        self.storage_manager.register_storage(storage)
-
-
     async def _process_sensor_data_loop(self):
         while (True):
             sensor_data = await self.sensor_manager.accumulate_all_sensor_data()
