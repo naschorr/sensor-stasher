@@ -46,8 +46,20 @@ class SensorStasher:
         self.system_id: str = system_id if system_id is not None else self._get_system_id()
 
         self._loop = None
-        self.sensor_manager: SensorManager = SensorManager(logger, configuration, sensors_configuration, sensor_discoverer)
-        self.storage_manager: StorageManager = StorageManager(logger, configuration, storage_clients_configuration, storage_discoverer, implementation_instantiator)
+        self.sensor_manager: SensorManager = SensorManager(
+            logger,
+            configuration,
+            sensors_configuration,
+            sensor_discoverer,
+            implementation_instantiator
+        )
+        self.storage_manager: StorageManager = StorageManager(
+            logger,
+            configuration,
+            storage_clients_configuration,
+            storage_discoverer,
+            implementation_instantiator
+        )
 
         self.logger.debug(f"Initialized SensorStasher with system type: '{self.system_type}', system id: '{self.system_id}', and sensor poll interval: '{self.sensor_poll_interval_seconds}' seconds.")
 

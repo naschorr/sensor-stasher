@@ -1,5 +1,6 @@
 import random
 
+from models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.models.sensor_adapter import SensorAdapter
 from sensor.sensors.rng.rng_config import RNGConfig
 
@@ -7,9 +8,9 @@ from sensor.sensors.rng.rng_config import RNGConfig
 class RNGDriver(SensorAdapter):
     ## Lifecycle
 
-    def __init__(self, configuration: RNGConfig):
-        self._sensor_name = configuration.sensor_name or "RNG"
-        self._sensor_id = configuration.sensor_id or self.sensor_name
+    def __init__(self, sensor_stasher_configuration: SensorStasherConfig, rng_configuration: RNGConfig):
+        self._sensor_name = rng_configuration.sensor_name or "RNG"
+        self._sensor_id = rng_configuration.sensor_id or self.sensor_name
 
     ## Properties
 
