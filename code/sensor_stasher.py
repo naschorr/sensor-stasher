@@ -8,10 +8,8 @@ from datetime import datetime, timedelta
 
 from common.implementation_instantiator import ImplementationInstantiator
 from sensor.sensor_manager import SensorManager
-from sensor.models.sensor_adapter import SensorAdapter
 from sensor.sensor_discoverer import SensorDiscoverer
 from storage.storage_manager import StorageManager
-from storage.models.storage_adapter import StorageAdapter
 from storage.storage_discoverer import StorageDiscoverer
 from models.config.sensor_stasher_config import SensorStasherConfig
 from utilities.configuration.sensor_stasher_configuration import SensorStasherConfiguration
@@ -69,7 +67,7 @@ class SensorStasher:
         system_id = None
 
         try:
-            if ('nt' in os.name):
+            if (get_c):
                 ## Thanks to https://stackoverflow.com/a/66953913/1724602
                 system_id = str(subprocess.check_output('wmic csproduct get uuid'), 'utf-8').split('\n')[1].strip()
             else:
