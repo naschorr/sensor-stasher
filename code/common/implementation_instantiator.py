@@ -5,7 +5,7 @@ import pydantic
 from typing import TypeVar, Union, Optional
 
 from common.exceptions.instantiation_exception import InstantiationException
-from models.config.sensor_stasher_config import SensorStasherConfig
+from common.models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.models.sensor_adapter import SensorAdapter
 from sensor.models.config.sensor_config import SensorConfig
 from storage.models.storage_adapter import StorageAdapter

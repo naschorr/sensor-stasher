@@ -1,7 +1,7 @@
 from abc import ABC
 
+from common.models.platform_type import PlatformType
 from sensor.platforms.sensors.platform_sensor import PlatformSensor
-from models.platform_type import PlatformType
 
 
 class RaspberryPiSensor(PlatformSensor, ABC):

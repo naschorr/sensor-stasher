@@ -1,9 +1,9 @@
 from pathlib import Path
 from typing import Optional
 
+from common.models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.sensor_discoverer import SensorDiscoverer
 from storage.storage_discoverer import StorageDiscoverer
-from models.config.sensor_stasher_config import SensorStasherConfig
 from utilities.configuration.sensor_stasher_configuration import SensorStasherConfiguration
 from utilities.configuration.dynamic_sensor_configuration import DynamicSensorConfiguration
 from utilities.configuration.dynamic_storage_client_configuration import DynamicStorageClientConfiguration

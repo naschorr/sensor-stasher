@@ -2,7 +2,7 @@ import logging
 import pydantic
 
 from common.implementation_instantiator import ImplementationInstantiator
-from models.config.sensor_stasher_config import SensorStasherConfig
+from common.models.config.sensor_stasher_config import SensorStasherConfig
 from storage.storage_discoverer import StorageDiscoverer
 from storage.models.storage_adapter import StorageAdapter
 from sensor.models.data.sensor_datum import SensorDatum

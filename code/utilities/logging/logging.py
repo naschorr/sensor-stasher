@@ -5,7 +5,7 @@ from pathlib import Path
 from logging.handlers import TimedRotatingFileHandler
 from typing import Optional
 
-from models.platform_type import PlatformType
+from common.models.platform_type import PlatformType
 from utilities.misc import get_root_path, get_current_platform
 from .log_level import LogLevel
 

@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Optional
 
-from models.config.sensor_stasher_config import SensorStasherConfig
+from common.models.config.sensor_stasher_config import SensorStasherConfig
 from utilities.configuration.hierarchical_configuration import HierarchicalConfiguration
 from utilities.misc import get_root_path
 

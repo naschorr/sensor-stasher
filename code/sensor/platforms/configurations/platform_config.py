@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
+from common.models.platform_type import PlatformType
 from ..platform_base import PlatformBase
-from models.platform_type import PlatformType
 
 
 class PlatformConfig(PlatformBase, ABC):
