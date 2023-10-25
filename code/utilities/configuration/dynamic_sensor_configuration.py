@@ -26,13 +26,10 @@ class DynamicSensorConfiguration(HierarchicalConfiguration):
         output = {}
         for driver, config in sensor_config_map.items():
             ## Really lazy, but it works as long as new sensors are added that follow existing naming conventions.
-            ## todo: improve this!
             name = driver.__module__.split("_driver")[0]
-            if (hasattr(config, "sensor_name")):
-                name = config.sensor_name
 
             ## Pydantic expects a name to map to a tuple of (type, default)
-            output[name.lower()] = (config, None)
+            output[name.lower()] = (config, {})
 
         return output
 

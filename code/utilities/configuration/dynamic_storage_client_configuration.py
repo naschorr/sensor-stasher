@@ -1,11 +1,11 @@
 from pathlib import Path
 import pydantic
 
+from models.config.sensor_stasher_config import SensorStasherConfig
 from storage.storage_discoverer import StorageDiscoverer
 from storage.models.storage_adapter import StorageAdapter
 from storage.models.config.storage_config import StorageConfig
 from utilities.configuration.hierarchical_configuration import HierarchicalConfiguration
-from utilities.misc import get_root_path
 
 
 class DynamicStorageClientConfiguration(HierarchicalConfiguration):
@@ -25,13 +25,10 @@ class DynamicStorageClientConfiguration(HierarchicalConfiguration):
         output = {}
         for driver, config in storage_client_config_map.items():
             ## Really lazy, but it works as long as new storage_clients are added that follow existing naming conventions.
-            ## todo: improve this!
             name = driver.__module__.split("_client")[0]
-            if (hasattr(config, "sensor_name")):
-                name = config.sensor_name
 
             ## Pydantic expects a name to map to a tuple of (type, default)
-            output[name.lower()] = (config, None)
+            output[name.lower()] = (config, {})
 
         return output
 
