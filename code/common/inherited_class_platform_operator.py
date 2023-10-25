@@ -1,9 +1,9 @@
 from typing import Callable, Optional, Type, TypeVar
 import inspect
 
+from common.models.platform_type import PlatformType
 from sensor.platforms.communicators.platform_communicator import PlatformCommunicator
 from sensor.platforms.sensors.platform_sensor import PlatformSensor
-from models.platform_type import PlatformType
 from sensor.exceptions.sensor_method_finder_platform_exception import SensorMethodFinderPlatformException
 from utilities.misc import get_current_platform
 

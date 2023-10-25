@@ -1,7 +1,7 @@
 import platform
 from pathlib import Path
 
-from models.platform_type import PlatformType
+from common.models.platform_type import PlatformType
 
 ## Config
 DIRS_FROM_ROOT = 2			            # How many directories away this script is from the root

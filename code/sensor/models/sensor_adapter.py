@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from models.config.sensor_stasher_config import SensorStasherConfig
+from common.models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.models.data.sensor_datum import SensorDatum
 from sensor.models.config.sensor_config import SensorConfig
 

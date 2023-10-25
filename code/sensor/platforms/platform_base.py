@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from models.platform_type import PlatformType
+from common.models.platform_type import PlatformType
 
 
 class PlatformBase(ABC):

@@ -1,6 +1,6 @@
 import logging
 
-from models.config.sensor_stasher_config import SensorStasherConfig
+from common.models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.models.sensor_type import SensorType
 from sensor.models.data.sensor_datum import SensorDatum
 from sensor.sensors.rng.rng_driver import RNGDriver

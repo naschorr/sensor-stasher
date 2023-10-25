@@ -1,7 +1,7 @@
 from abc import ABC
 
+from common.models.platform_type import PlatformType
 from .platform_config import PlatformConfig
-from models.platform_type import PlatformType
 
 
 class RaspberryPiConfig(PlatformConfig, ABC):

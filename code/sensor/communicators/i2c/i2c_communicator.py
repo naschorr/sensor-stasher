@@ -2,10 +2,10 @@ import logging
 import os
 import contextlib
 
+from common.models.platform_type import PlatformType
 from sensor.models.sensor_type import SensorType
 from sensor.models.communicator_adapter import CommunicatorAdapter
 from sensor.platforms.communicators.raspberrypi_communicator import RaspberryPiCommunicator
-from models.platform_type import PlatformType
 from sensor.exceptions.device_in_use_exception import DeviceInUseException
 from utilities.logging.logging import Logging
 from utilities.misc import get_current_platform

@@ -1,6 +1,6 @@
 from typing import Type
 
-from models.platform_type import PlatformType
+from common.models.platform_type import PlatformType
 from sensor.platforms.configurations.platform_config import PlatformConfig
 from sensor.platforms.configurations.raspberrypi_config import RaspberryPiConfig
 from sensor.platforms.configurations.windows_config import WindowsConfig

@@ -1,7 +1,7 @@
 from pathlib import Path
 import pydantic
 
-from models.config.sensor_stasher_config import SensorStasherConfig
+from common.models.config.sensor_stasher_config import SensorStasherConfig
 from storage.storage_discoverer import StorageDiscoverer
 from storage.models.storage_adapter import StorageAdapter
 from storage.models.config.storage_config import StorageConfig

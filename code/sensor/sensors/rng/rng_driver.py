@@ -1,6 +1,6 @@
 import random
 
-from models.config.sensor_stasher_config import SensorStasherConfig
+from common.models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.models.sensor_adapter import SensorAdapter
 from sensor.sensors.rng.rng_config import RNGConfig
 

@@ -2,8 +2,8 @@ import logging
 import pydantic
 
 from common.implementation_instantiator import ImplementationInstantiator
+from common.models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.sensor_discoverer import SensorDiscoverer
-from models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.models.sensor_adapter import SensorAdapter
 from sensor.models.data.sensor_datum import SensorDatum
 from utilities.logging.logging import Logging

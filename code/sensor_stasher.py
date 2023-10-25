@@ -1,17 +1,13 @@
 import asyncio
-import os
-import subprocess
-import platform
-import uuid
 import logging
 from datetime import datetime, timedelta
 
 from common.implementation_instantiator import ImplementationInstantiator
+from common.models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.sensor_manager import SensorManager
 from sensor.sensor_discoverer import SensorDiscoverer
 from storage.storage_manager import StorageManager
 from storage.storage_discoverer import StorageDiscoverer
-from models.config.sensor_stasher_config import SensorStasherConfig
 from utilities.configuration.sensor_stasher_configuration import SensorStasherConfiguration
 from utilities.configuration.configuration import Configuration
 from utilities.logging.logging import Logging
