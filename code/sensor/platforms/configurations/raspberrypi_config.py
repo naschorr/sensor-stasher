@@ -1,10 +1,11 @@
 from abc import ABC
 
-from sensor.platforms.sensors.platform_sensor import PlatformSensor
+from .platform_config import PlatformConfig
 from models.platform_type import PlatformType
 
 
-class RaspberryPiSensor(PlatformSensor, ABC):
+class RaspberryPiConfig(PlatformConfig, ABC):
+
     ## Statics
 
     @staticmethod

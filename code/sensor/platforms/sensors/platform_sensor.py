@@ -1,25 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import Callable
 
-from models.platform_type import PlatformType
+from ..platform_base import PlatformBase
+from sensor.models.data.sensor_datum import SensorDatum
 
 
-class PlatformSensor(ABC):
-    ## Statics
+class PlatformSensor(PlatformBase, ABC):
 
-    @staticmethod
+    ## Methods
+
     @abstractmethod
-    def get_platform_type() -> PlatformType:
-        pass
-
-
-    @staticmethod
-    @abstractmethod
-    def get_initializer_method() -> Callable:
-        pass
-
-
-    @staticmethod
-    @abstractmethod
-    def get_reader_method() -> Callable:
+    async def read() -> list[SensorDatum]:
         pass

@@ -1,5 +1,5 @@
 certifi==2021.10.8
-influxdb-client==1.37.0
+influxdb-client==1.28.0
 python-dateutil==2.8.2
 pytz==2022.1
 Rx==3.2.0

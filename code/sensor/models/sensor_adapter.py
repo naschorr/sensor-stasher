@@ -1,13 +1,15 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
+from models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.models.data.sensor_datum import SensorDatum
 from sensor.models.config.sensor_config import SensorConfig
 
 
 class SensorAdapter(ABC):
+    ## Lifecycle
+
     @abstractmethod
-    def __init__(self, configuration: Optional[SensorConfig]):
+    def __init__(self, sensor_stasher_configuration: SensorStasherConfig, sensor_configuration: SensorConfig):
         pass
 
     ## Properties

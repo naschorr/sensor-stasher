@@ -88,7 +88,7 @@ class InheritedClassPlatformOperator:
 
     def get_communicator_initializer(self, communicator: PlatformCommunicator) -> Callable:
         """
-        Find the commumicator initializer method for the current platform on the provided PlatformCommunicator.
+        Find the communicator initializer method for the current platform on the provided PlatformCommunicator.
         """
 
         current_platform = get_current_platform()
