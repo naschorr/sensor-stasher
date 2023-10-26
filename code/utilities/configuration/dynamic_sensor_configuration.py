@@ -12,7 +12,7 @@ class DynamicSensorConfiguration(HierarchicalConfiguration):
     ## Lifecycle
 
     def __init__(self, sensor_discoverer: SensorDiscoverer):
-        self.sensor_discoverer = sensor_discoverer
+        self.sensor_discoverer = sensor_discoverer  ## todo: SensorManager instead?
 
 
     ## Methods
