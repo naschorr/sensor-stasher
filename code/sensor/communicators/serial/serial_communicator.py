@@ -11,6 +11,7 @@ from sensor.exceptions.device_in_use_exception import DeviceInUseException
 from utilities.logging.logging import Logging
 
 
+## todo: move to platform specific system similar to how the sensors are handled
 class SerialCommunicator(CommunicatorAdapter, RaspberryPiCommunicator):
     ## Statics
 

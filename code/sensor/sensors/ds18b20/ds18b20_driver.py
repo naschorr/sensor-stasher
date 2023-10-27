@@ -16,7 +16,7 @@ class DS18B20Driver(SensorAdapter, OneWireCommunicator):
         self.one_wire_device_path = ds18b20_configuration.one_wire_device_path
         self.temperature_celcius_offset = ds18b20_configuration.temperature_celcius_offset or 0.0
         self._sensor_name = ds18b20_configuration.sensor_name or "DS18B20"
-        self._sensor_id = ds18b20_configuration.sensor_id or self.one_wire_device_path.parent.name or self.one_wire_device_path
+        self._sensor_id = ds18b20_configuration.sensor_id or self.one_wire_device_path.parent.name / self.one_wire_device_path.name
 
         self.logger.debug(f"Initialized {self.sensor_type} sensor. id: '{self.sensor_id}'")
 
