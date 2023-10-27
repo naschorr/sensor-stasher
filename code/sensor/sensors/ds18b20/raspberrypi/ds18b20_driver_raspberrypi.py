@@ -1,13 +1,14 @@
 import os
+import logging
 
 from common.models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.models.data.sensor_datum import SensorDatum
-from sensor.communicators.onewire.onewire_communicator import OneWireCommunicator
+from sensor.platforms.sensors.raspberrypi_sensor import RaspberryPiSensor
 from sensor.sensors.ds18b20.ds18b20_config import DS18B20Config
 from sensor.sensors.ds18b20.ds18b20_driver import DS18B20Driver
 from sensor.sensors.ds18b20.ds18b20_datum import DS18B20Datum
 
-class DS18B20DriverRaspberryPi(DS18B20Driver, OneWireCommunicator):
+class DS18B20DriverRaspberryPi(DS18B20Driver, RaspberryPiSensor):
     def __init__(self, sensor_stasher_configuration: SensorStasherConfig, ds18b20_configuration: DS18B20Config):
         super().__init__(sensor_stasher_configuration, ds18b20_configuration)
 
