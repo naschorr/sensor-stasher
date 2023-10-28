@@ -1,7 +1,9 @@
 import time
-import smbus
+
+import smbus2    # type: ignore
 
 from common.models.config.sensor_stasher_config import SensorStasherConfig
+from sensor.communicators.i2c.raspberrypi.i2c_communicator_raspberrypi import I2CCommunicatorRaspberryPi
 from sensor.models.data.sensor_datum import SensorDatum
 from sensor.platforms.sensors.raspberrypi_sensor import RaspberryPiSensor
 from sensor.sensors.sht31.sht31_datum import SHT31TemperatureDatum, SHT31HumidityDatum
@@ -9,7 +11,7 @@ from sensor.sensors.sht31.sht31_config import SHT31Config
 from sensor.sensors.sht31.sht31_driver import SHT31Driver
 
 
-class SHT31DriverRaspberryPi(SHT31Driver, RaspberryPiSensor):
+class SHT31DriverRaspberryPi(SHT31Driver, RaspberryPiSensor, I2CCommunicatorRaspberryPi):
     '''
     Simple interface for the SHT31 temperature and humidity sensor.
 
@@ -18,9 +20,10 @@ class SHT31DriverRaspberryPi(SHT31Driver, RaspberryPiSensor):
     '''
 
     def __init__(self, sensor_stasher_configuration: SensorStasherConfig, sht31_configuration: SHT31Config):
-        super().__init__(sensor_stasher_configuration, sht31_configuration)
+        super(SHT31Driver).__init__(sensor_stasher_configuration, sht31_configuration)
+        super(I2CCommunicatorRaspberryPi).__init__(self.i2c_bus, self.i2c_address)
 
-        self._bus = smbus.SMBus(self.i2c_bus)
+        self._bus = smbus2.SMBus(self.i2c_bus)
 
         self.logger.debug(f"Initialized {self.sensor_type} sensor. id: {self.sensor_id}, i2c_bus: {self.i2c_bus}, i2c_address: {self.i2c_address}")
 
