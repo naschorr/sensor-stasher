@@ -1,41 +1,30 @@
 import os
 import logging
 from pathlib import Path
-from typing import List
 
-from sensor.sensor_adapter import SensorAdapter
-from sensor.models.data.sensor_datum import SensorDatum
-from .ds18b20_datum import DS18B20Datum
-from utilities import load_config, initialize_logging
+from common.models.config.sensor_stasher_config import SensorStasherConfig
+from sensor.communicators.onewire.onewire_communicator import OneWireCommunicator
+from sensor.models.sensor_adapter import SensorAdapter
+from sensor.sensors.ds18b20.ds18b20_config import DS18B20Config
+from utilities.logging.logging import Logging
 
-class DS18B20Driver(SensorAdapter):
-    def __init__(self, sensor_id: str):
-        config = load_config(Path(__file__).parent)
-        self.logger = initialize_logging(logging.getLogger(__name__))
+class DS18B20Driver(SensorAdapter, OneWireCommunicator):
+    def __init__(self, sensor_stasher_configuration: SensorStasherConfig, ds18b20_configuration: DS18B20Config):
+        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
-        ## Load config
-        self.one_wire_device_path = config.get('one_wire_device_path')
-        assert (self.one_wire_device_path is not None)
-        self.temperature_celcius_offset = config.get('temperature_celcius_offset', 0.0)
-
-        self._sensor_type = "DS18B20"
-        self._sensor_id = sensor_id or self.one_wire_device_path.parent.name or self.one_wire_device_path
-
-        ## Load relevant kernel modules for the sensor
-        os.system("modprobe w1-gpio")
-        os.system("modprobe w1-therm")
-
-        ## Perform initial read to make sure the sensor is ready. Sometimes on startup the sensor will return 85 degrees
-        ## celcius, but will fix itself on the next read.
-        self.read_one_wire_device_temperature_celcius()
+        ## Configure
+        self.one_wire_device_path = ds18b20_configuration.one_wire_device_path
+        self.temperature_celcius_offset = ds18b20_configuration.temperature_celcius_offset or 0.0
+        self._sensor_name = ds18b20_configuration.sensor_name or "DS18B20"
+        self._sensor_id = ds18b20_configuration.sensor_id or self.one_wire_device_path.parent.name / self.one_wire_device_path.name
 
         self.logger.debug(f"Initialized {self.sensor_type} sensor. id: '{self.sensor_id}'")
 
     ## Properties
 
     @property
-    def sensor_type(self) -> str:
-        return self._sensor_type
+    def sensor_name(self) -> str:
+        return self._sensor_name
 
 
     @property
@@ -65,21 +54,3 @@ class DS18B20Driver(SensorAdapter):
                 self._one_wire_device_path = Path(value)
         else:
             raise TypeError(f"one_wire_device_path must be of type Path or str, not {type(value)}")
-
-    ## Adapter methods
-
-    async def read(self) -> List[SensorDatum]:
-        temperature_celcius = self.read_one_wire_device_temperature_celcius()
-
-        return [
-            DS18B20Datum(self.sensor_type, self.sensor_id, {
-                "temperature_celcius": temperature_celcius + self.temperature_celcius_offset
-            })
-        ]
-
-    ## Methods
-
-    def read_one_wire_device_temperature_celcius(self) -> float:
-        with open(self.one_wire_device_path, 'r') as device_file:
-            lines = device_file.readlines()
-            return float(lines[1].split("=")[1]) / 1000.0

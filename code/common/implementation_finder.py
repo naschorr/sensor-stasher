@@ -34,7 +34,7 @@ class ImplementationFinder:
             ## todo: too many strings are being added to the path, fix this
             sys.path.append(str(file.parent))
             try:
-                candidate_module = importlib.import_module(file.stem, package="storage.clients.influx")
+                candidate_module = importlib.import_module(file.stem)
             except Exception as e:
                 ## todo remove this once all sensors have been ported over
                 self.logger.debug(f"Unable to import module: {file.stem}")
