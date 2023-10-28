@@ -1,12 +1,11 @@
 import logging
 
 from common.models.config.sensor_stasher_config import SensorStasherConfig
-from sensor.communicators.serial.serial_communicator import SerialCommunicator
 from sensor.models.sensor_adapter import SensorAdapter
 from sensor.sensors.pms7003.pms7003_config import PMS7003Config
 from utilities.logging.logging import Logging
 
-class PMS7003Driver(SensorAdapter, SerialCommunicator):
+class PMS7003Driver(SensorAdapter):
     def __init__(self, sensor_stasher_configuration: SensorStasherConfig, pms7003_configuration: PMS7003Config):
         self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 

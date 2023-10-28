@@ -2,15 +2,17 @@ import asyncio
 from pms7003 import Pms7003Sensor, PmsSensorException
 
 from common.models.config.sensor_stasher_config import SensorStasherConfig
+from sensor.communicators.serial.raspberrypi.serial_communicator_raspberrypi import SerialCommunicatorRaspberryPi
 from sensor.models.data.sensor_datum import SensorDatum
 from sensor.platforms.sensors.raspberrypi_sensor import RaspberryPiSensor
 from sensor.sensors.pms7003.pms7003_config import PMS7003Config
 from sensor.sensors.pms7003.pms7003_datum import PMS7003Datum
 from sensor.sensors.pms7003.pms7003_driver import PMS7003Driver
 
-class PMS7003DriverRaspberryPi(PMS7003Driver, RaspberryPiSensor):
+class PMS7003DriverRaspberryPi(PMS7003Driver, RaspberryPiSensor, SerialCommunicatorRaspberryPi):
     def __init__(self, sensor_stasher_configuration: SensorStasherConfig, pms7003_configuration: PMS7003Config):
-        super().__init__(sensor_stasher_configuration, pms7003_configuration)
+        super(PMS7003Driver).__init__(sensor_stasher_configuration, pms7003_configuration)
+        super(SerialCommunicatorRaspberryPi).__init__(self.serial_device_path)
 
         self._sensor = Pms7003Sensor(self.serial_device_path)
 

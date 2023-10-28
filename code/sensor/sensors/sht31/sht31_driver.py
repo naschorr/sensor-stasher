@@ -1,13 +1,12 @@
 import logging
 
 from common.models.config.sensor_stasher_config import SensorStasherConfig
-from sensor.communicators.i2c.i2c_communicator import I2CCommunicator
 from sensor.models.sensor_adapter import SensorAdapter
 from sensor.sensors.sht31.sht31_config import SHT31Config
 from utilities.logging.logging import Logging
 
 
-class SHT31Driver(SensorAdapter, I2CCommunicator):
+class SHT31Driver(SensorAdapter):
     '''
     Simple interface for the SHT31 temperature and humidity sensor.
 

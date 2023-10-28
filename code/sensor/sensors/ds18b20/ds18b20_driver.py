@@ -3,12 +3,11 @@ import logging
 from pathlib import Path
 
 from common.models.config.sensor_stasher_config import SensorStasherConfig
-from sensor.communicators.onewire.onewire_communicator import OneWireCommunicator
 from sensor.models.sensor_adapter import SensorAdapter
 from sensor.sensors.ds18b20.ds18b20_config import DS18B20Config
 from utilities.logging.logging import Logging
 
-class DS18B20Driver(SensorAdapter, OneWireCommunicator):
+class DS18B20Driver(SensorAdapter):
     def __init__(self, sensor_stasher_configuration: SensorStasherConfig, ds18b20_configuration: DS18B20Config):
         self.logger = Logging.initialize_logging(logging.getLogger(__name__))
 
