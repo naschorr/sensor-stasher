@@ -20,7 +20,7 @@ class SerialCommunicatorRaspberryPi(SerialCommunicator, RaspberryPiCommunicator)
             raise IOError("Serial hardware is not enabled on this device.")
 
         ## Verify that the serial path exists
-        if (not self._validate_serial_device_path(self.serial_device_path)):
+        if (not self._validate_serial_device_path()):
             raise IOError(f"Serial path {self.serial_device_path} doesn't exist")
 
         ## Register the sensor, and make sure there aren't any collisions
