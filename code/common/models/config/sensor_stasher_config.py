@@ -3,7 +3,7 @@ import platform
 from typing import Optional
 from pydantic import BaseModel, Field, DirectoryPath
 
-from common.models.config.logging_config import LoggingConfig
+from utilities.logging.logging_config import LoggingConfig
 from utilities.misc import get_root_path
 
 
