@@ -1,38 +1,32 @@
 import logging
 import datetime
 import os
-from pathlib import Path
 from logging.handlers import TimedRotatingFileHandler
-from typing import Optional
 
 from common.models.platform_type import PlatformType
-from utilities.misc import get_root_path, get_current_platform
+from common.models.config.logging_config import LoggingConfig
+from utilities.misc import get_current_platform
 from .log_level import LogLevel
 
 
 class Logging:
 
-    ## Statics
-
-    LOG_LEVEL = LogLevel.DEBUG
-    LOG_PATH = get_root_path() / 'logs'
-    LOG_BACKUP_COUNT = 7
-
     ## Lifecycle
 
-    def __init__(self, *, log_level: Optional[LogLevel] = None, log_path: Optional[Path] = None, log_backup_count: Optional[int] = None):
+    def __init__(self, logging_config: LoggingConfig):
         ## todo: simplify log level configuration
-        Logging.LOG_LEVEL = log_level
-        Logging.LOG_PATH = log_path
-        Logging.LOG_BACKUP_COUNT = log_backup_count
+        Logging.LOG_LEVEL = logging_config.log_level
+        Logging.LOG_PATH = logging_config.log_path
+        Logging.LOG_BACKUP_COUNT = logging_config.log_backup_count
+        Logging.LOG_NAME = logging_config.log_name
 
     ## Methods
 
     @staticmethod
     def initialize_logging(logger):
-        FORMAT = "%(asctime)s - %(module)s - %(funcName)s - %(levelname)s - %(message)s"
-        formatter = logging.Formatter(FORMAT)
-        logging.basicConfig(format=FORMAT)
+        log_format = "%(asctime)s - %(module)s/%(funcName)s - %(levelname)s - %(message)s"
+        formatter = logging.Formatter(log_format)
+        logging.basicConfig(format=log_format)
 
         log_level = Logging.LOG_LEVEL
         if (log_level == LogLevel.DEBUG):
@@ -50,13 +44,8 @@ class Logging:
 
         ## Get the directory containing the logs and make sure it exists, creating it if it doesn't
         log_path = Logging.LOG_PATH
-        if (log_path):
-            log_path = Path(log_path)
-        else:
-            log_path = Path.joinpath(get_root_path(), 'logs')
-
         log_path.mkdir(parents=True, exist_ok=True)    # Basically a mkdir -p $log_path
-        log_file = Path(log_path, 'sensor_stasher.log')    # Build the true path to the log file
+        log_file = log_path / (Logging.LOG_NAME + ".log")    # Build the true path to the log file
 
         ## Windows has an issue with overwriting old logs (from the previous day, or older) automatically so just delete
         ## them. This is hacky, but I only use Windows for development so it's not a big deal.

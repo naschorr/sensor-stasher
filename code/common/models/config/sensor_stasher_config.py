@@ -1,14 +1,17 @@
 import uuid
 import platform
 from typing import Optional
-from pathlib import Path
 from pydantic import BaseModel, Field, DirectoryPath
 
+from common.models.config.logging_config import LoggingConfig
 from utilities.misc import get_root_path
-from utilities.logging.log_level import LogLevel
 
 
 class SensorStasherConfig(BaseModel):
+    logging: Optional[LoggingConfig] = Field(
+        default=LoggingConfig(),
+        description="The configuration for logging."
+    )
     system_type: Optional[str] = Field(
         default=platform.uname().system.lower(),
         description="The type of system this sensor is running on.",
@@ -30,18 +33,4 @@ class SensorStasherConfig(BaseModel):
     storage_clients_directory_path: DirectoryPath = Field(
         default=get_root_path() / "code" / "storage" / "clients",
         description="The path to the directory containing storage clients."
-    )
-    log_level: LogLevel = Field(
-        default=LogLevel.ERROR,
-        title="Log Level",
-        description="The log level to use for the application."
-    )
-    log_path: Optional[Path] = Field(
-        default=None,
-        title="Log Path",
-        description="The path to the logging directory for the application."
-    )
-    log_backup_count: int = Field(
-        default=7,
-        description="The number of log files to keep."
     )

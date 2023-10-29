@@ -17,11 +17,7 @@ class SensorStasher:
     def __init__(self):
         ## Preconfig
         sensor_stasher_configuration = SensorStasherConfiguration().load_configuration()
-        logger = Logging(
-            log_level = sensor_stasher_configuration.log_level,
-            log_path = sensor_stasher_configuration.log_path,
-            log_backup_count = sensor_stasher_configuration.log_backup_count
-        )
+        logger = Logging(sensor_stasher_configuration.logging)
 
         ## Config
         self.logger = Logging.initialize_logging(logging.getLogger(__name__))
