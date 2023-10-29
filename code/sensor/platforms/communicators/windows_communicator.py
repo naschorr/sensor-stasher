@@ -2,7 +2,6 @@ from typing import Callable
 from abc import ABC, abstractmethod
 
 from common.models.platform_type import PlatformType
-from sensor.models.data.sensor_datum import SensorDatum
 from sensor.platforms.communicators.platform_communicator import PlatformCommunicator
 
 
@@ -12,10 +11,6 @@ class WindowsCommunicator(PlatformCommunicator, ABC):
     @staticmethod
     def get_platform_type() -> PlatformType:
         return PlatformType.WINDOWS
-
-    @staticmethod
-    def get_initializer_method() -> Callable:
-        return WindowsCommunicator.initialize_communicator_windows
 
     ## Methods
 
