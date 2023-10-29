@@ -16,10 +16,9 @@ class SensorStasher:
     def __init__(self):
         ## Preconfig
         sensor_stasher_configuration = SensorStasherConfiguration().load_configuration()
-        logging = Logging(sensor_stasher_configuration.logging)
 
         ## Config
-        self.logger = Logging.LOGGER
+        self.logger = Logging(sensor_stasher_configuration.logging).LOGGER
         sensor_discoverer = SensorDiscoverer()
         storage_discoverer = StorageDiscoverer()
         global_configuration = Configuration(sensor_discoverer, storage_discoverer)
