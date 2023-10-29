@@ -1,4 +1,3 @@
-import logging
 import os
 from pathlib import Path
 
@@ -10,7 +9,7 @@ from utilities.logging.logging import Logging
 
 class OneWireCommunicatorRaspberryPi(OneWireCommunicator, RaspberryPiCommunicator):
     def __init__(self, onewire_device_path: Path):
-        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
+        self.logger = Logging.LOGGER
 
         self.onewire_device_path = onewire_device_path
 

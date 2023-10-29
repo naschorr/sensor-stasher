@@ -1,4 +1,3 @@
-import logging
 import pydantic
 
 from common.implementation_instantiator import ImplementationInstantiator
@@ -17,7 +16,7 @@ class StorageManager:
             storage_discoverer: StorageDiscoverer,
             implementation_instantiator: ImplementationInstantiator
     ):
-        self.logger = logger.initialize_logging(logging.getLogger(__name__))
+        self.logger = logger
         self.configuration = configuration
         self.storage_clients_configuration = storage_clients_configuration
         self.system_type = configuration.system_type

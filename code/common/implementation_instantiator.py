@@ -1,6 +1,5 @@
 import inspect
 import contextlib
-import logging
 import pydantic
 from typing import TypeVar, Union, Optional
 
@@ -21,7 +20,7 @@ class ImplementationInstantiator:
     ## Lifecycle
 
     def __init__(self, logger: Logging, sensor_stasher_configuration: SensorStasherConfig):
-        self.logger = logger.initialize_logging(logging.getLogger(__name__))
+        self.logger = logger
         self.sensor_stasher_configuration = sensor_stasher_configuration
 
     ## Methods

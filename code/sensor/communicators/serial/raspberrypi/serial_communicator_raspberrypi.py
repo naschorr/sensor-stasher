@@ -1,4 +1,3 @@
-import logging
 import os
 from pathlib import Path
 
@@ -10,7 +9,7 @@ from utilities.logging.logging import Logging
 
 class SerialCommunicatorRaspberryPi(SerialCommunicator, RaspberryPiCommunicator):
     def __init__(self, serial_device_path: Path):
-        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
+        self.logger = Logging.LOGGER
 
         self.serial_device_path = serial_device_path
 

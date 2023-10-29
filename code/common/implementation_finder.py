@@ -1,4 +1,3 @@
-import logging
 import inspect
 import importlib
 import sys
@@ -13,7 +12,7 @@ class ImplementationFinder:
     ## Lifecycle
 
     def __init__(self):
-        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
+        self.logger = Logging.LOGGER
 
     ## Methods
 

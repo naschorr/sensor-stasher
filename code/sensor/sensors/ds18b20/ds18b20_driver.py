@@ -1,5 +1,3 @@
-import os
-import logging
 from pathlib import Path
 
 from common.models.config.sensor_stasher_config import SensorStasherConfig
@@ -9,7 +7,7 @@ from utilities.logging.logging import Logging
 
 class DS18B20Driver(SensorAdapter):
     def __init__(self, sensor_stasher_configuration: SensorStasherConfig, ds18b20_configuration: DS18B20Config):
-        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
+        self.logger = Logging.LOGGER
 
         ## Configure
         self.one_wire_device_path = ds18b20_configuration.one_wire_device_path

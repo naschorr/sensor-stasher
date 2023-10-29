@@ -1,5 +1,3 @@
-import logging
-
 from common.models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.models.sensor_adapter import SensorAdapter
 from sensor.sensors.sht31.sht31_config import SHT31Config
@@ -15,7 +13,7 @@ class SHT31Driver(SensorAdapter):
     '''
 
     def __init__(self, sensor_stasher_configuration: SensorStasherConfig, sht31_configuration: SHT31Config):
-        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
+        self.logger = Logging.LOGGER
 
         ## Configure
         self.i2c_bus = sht31_configuration.i2c_bus
