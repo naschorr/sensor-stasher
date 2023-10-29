@@ -4,7 +4,7 @@ import os
 from logging.handlers import TimedRotatingFileHandler
 
 from common.models.platform_type import PlatformType
-from common.models.config.logging_config import LoggingConfig
+from utilities.logging.logging_config import LoggingConfig
 from utilities.misc import get_current_platform
 from .log_level import LogLevel
 
