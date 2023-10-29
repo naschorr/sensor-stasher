@@ -1,4 +1,3 @@
-import logging
 import os
 
 import smbus2   # type: ignore
@@ -11,7 +10,7 @@ from utilities.logging.logging import Logging
 
 class I2CCommunicatorRaspberryPi(I2CCommunicator, RaspberryPiCommunicator):
     def __init__(self, i2c_bus: int, i2c_address: int):
-        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
+        self.logger = Logging.LOGGER
 
         self.i2c_bus = i2c_bus
         self.i2c_address = i2c_address

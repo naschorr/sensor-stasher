@@ -1,5 +1,4 @@
 import asyncio
-import logging
 from datetime import datetime, timedelta
 
 from common.implementation_instantiator import ImplementationInstantiator
@@ -17,29 +16,29 @@ class SensorStasher:
     def __init__(self):
         ## Preconfig
         sensor_stasher_configuration = SensorStasherConfiguration().load_configuration()
-        logger = Logging(sensor_stasher_configuration.logging)
+        logging = Logging(sensor_stasher_configuration.logging)
 
         ## Config
-        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
+        self.logger = Logging.LOGGER
         sensor_discoverer = SensorDiscoverer()
         storage_discoverer = StorageDiscoverer()
         global_configuration = Configuration(sensor_discoverer, storage_discoverer)
         configuration: SensorStasherConfig = global_configuration.sensor_stasher_configuration
         sensors_configuration = global_configuration.sensors_configuration
         storage_clients_configuration = global_configuration.storage_client_configuration
-        implementation_instantiator = ImplementationInstantiator(logger, configuration)
+        implementation_instantiator = ImplementationInstantiator(self.logger, configuration)
 
         self.sensor_poll_interval_seconds: int = configuration.sensor_poll_interval_seconds
         self._loop = None
         self.sensor_manager: SensorManager = SensorManager(
-            logger,
+            self.logger,
             configuration,
             sensors_configuration,
             sensor_discoverer,
             implementation_instantiator
         )
         self.storage_manager: StorageManager = StorageManager(
-            logger,
+            self.logger,
             configuration,
             storage_clients_configuration,
             storage_discoverer,

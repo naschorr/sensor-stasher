@@ -1,4 +1,3 @@
-import logging
 import pydantic
 
 from common.implementation_instantiator import ImplementationInstantiator
@@ -21,7 +20,7 @@ class SensorManager:
             sensor_discoverer: SensorDiscoverer,
             implementation_instantiator: ImplementationInstantiator
     ):
-        self.logger = logger.initialize_logging(logging.getLogger(__name__))
+        self.logger = logger
         self.configuration = configuration
         self.sensors_configuration = sensors_configuration
         self.sensor_discoverer = sensor_discoverer

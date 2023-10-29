@@ -1,4 +1,3 @@
-import logging
 import os
 from pathlib import Path
 
@@ -17,7 +16,7 @@ class SensorDiscoverer:
     ## Lifecycle
 
     def __init__(self):
-        self.logger = Logging.initialize_logging(logging.getLogger(__name__))
+        self.logger = Logging.LOGGER
         self.implementation_finder = ImplementationFinder()
 
     ## Methods
