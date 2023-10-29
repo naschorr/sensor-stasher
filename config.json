@@ -1,7 +1,6 @@
 {
     "sensor_poll_interval_seconds": 60,
     "logging": {
-        "log_level": "debug"
+        "log_level": "info"
     }
-        
 }
