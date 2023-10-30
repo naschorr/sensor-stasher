@@ -5,14 +5,14 @@ from sensor.models.data.data_type.data_type import DataType
 
 
 class OpenWeatherVersionMeasurement(SensorMeasurement):
-    def __init__(self, sensor_id: str, sensor_name: str, api_version: str):
+    def __init__(self, sensor_name: str, sensor_id: str, api_version: str):
         super().__init__(DataType.SCALAR, sensor_name, sensor_id)
 
         self.api_verion = api_version
 
 
 class OpenWeatherLocationMeasurement(SensorMeasurement):
-    def __init__(self, sensor_id: str, sensor_name: str, latitude: float, longitude: float):
+    def __init__(self, sensor_name: str, sensor_id: str, latitude: float, longitude: float):
         super().__init__(DataType.LOCATION, sensor_name, sensor_id)
 
         self.latitude = latitude
@@ -20,7 +20,7 @@ class OpenWeatherLocationMeasurement(SensorMeasurement):
 
 
 class OpenWeatherTemperatureMeasurement(SensorMeasurement):
-    def __init__(self, sensor_id: str, sensor_name: str, measurement: Dict):
+    def __init__(self, sensor_name: str, sensor_id: str, measurement: Dict):
         super().__init__(DataType.TEMPERATURE, sensor_name, sensor_id)
 
         self.temperature_c = measurement.get('temp')
@@ -30,21 +30,21 @@ class OpenWeatherTemperatureMeasurement(SensorMeasurement):
 
 
 class OpenWeatherHumidityMeasurement(SensorMeasurement):
-    def __init__(self, sensor_id: str, sensor_name: str, humidity: float):
+    def __init__(self, sensor_name: str, sensor_id: str, humidity: float):
         super().__init__(DataType.HUMIDITY, sensor_name, sensor_id)
 
         self.humidity = humidity
 
 
 class OpenWeatherPressureMeasurement(SensorMeasurement):
-    def __init__(self, sensor_id: str, sensor_name: str, pressure_sea_level_hpa: float):
+    def __init__(self, sensor_name: str, sensor_id: str, pressure_sea_level_hpa: float):
         super().__init__(DataType.PRESSURE, sensor_name, sensor_id)
 
         self.pressure_sea_level_pa = pressure_sea_level_hpa / 100
 
 
 class OpenWeatherWindMeasurement(SensorMeasurement):
-    def __init__(self, sensor_id: str, sensor_name: str, measurement: Dict):
+    def __init__(self, sensor_name: str, sensor_id: str, measurement: Dict):
         super().__init__(DataType.WIND, sensor_name, sensor_id)
 
         self.wind_speed_mps = measurement.get('speed')
@@ -53,7 +53,7 @@ class OpenWeatherWindMeasurement(SensorMeasurement):
 
 
 class OpenWeatherAtmosphereMeasurement(SensorMeasurement):
-    def __init__(self, sensor_id: str, sensor_name: str, visibility_m: float, cloud_percentage: float):
+    def __init__(self, sensor_name: str, sensor_id: str, visibility_m: float, cloud_percentage: float):
         super().__init__(DataType.ATMOSPHERE, sensor_name, sensor_id)
 
         self.visibility_m = visibility_m
@@ -61,7 +61,7 @@ class OpenWeatherAtmosphereMeasurement(SensorMeasurement):
 
 
 class OpenWeatherPrecipitationMeasurement(SensorMeasurement):
-    def __init__(self, sensor_id: str, sensor_name: str, rain_measurement: dict, snow_measurement: dict):
+    def __init__(self, sensor_name: str, sensor_id: str, rain_measurement: dict, snow_measurement: dict):
         super().__init__(DataType.PRECIPTATION, sensor_name, sensor_id)
 
         self.rain_1_hour_mm = rain_measurement.get('1h')
