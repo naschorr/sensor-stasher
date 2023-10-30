@@ -7,6 +7,8 @@ from sensor.models.config.sensor_config import SensorConfig
 from sensor.platforms.platform_manager import PlatformManager
 from sensor.platforms.sensors.platform_sensor import PlatformSensor
 from sensor.platforms.configurations.platform_config import PlatformConfig
+from sensor.platforms.sensors.agnostic_sensor import AgnosticSensor
+from sensor.platforms.configurations.agnostic_config import AgnosticConfig
 from utilities.misc import get_current_platform
 from utilities.logging.logging import Logging
 
@@ -92,10 +94,26 @@ class SensorDiscoverer:
                 self.logger.debug(f"Unable to find driver class in directory: {sensor_directory}")
                 continue
 
-            ## Look for platform specific implementation classes
+            ## Look for platform specific implementation classes (and platform agnostic implementation, if it exists)
             platform_driver_class = None
             platform_configuration_class = None
+            agnostic_driver_class = None
+            agnostic_configuration_class = None
             for platform_directory in [Path(directory_path) / platform_directory for platform_directory in platform_directories]:
+                ## Look for the platform agnostic classes, if they exist
+                if (agnostic_driver_class is None):
+                    agnostic_driver_class = self.implementation_finder.find_implementation_class(
+                        platform_directory,
+                        base_class=[SensorAdapter, AgnosticSensor]
+                    )
+                
+                if (agnostic_driver_class is None and agnostic_configuration_class is None):
+                    if (agnostic_driver_class is not None):
+                        agnostic_configuration_class = self.implementation_finder.find_implementation_class(
+                            platform_directory,
+                            base_class=[SensorConfig, AgnosticConfig]
+                        )
+
                 ## todo: This should really check for root_driver_class instead of the more generic SensorAdapter, but
                 ## I've noticed issues where the builtin issubclass function doesn't correctly identify if the sub class
                 ## inherits from the base class. However it works as expected if I manually resolve the
@@ -114,11 +132,16 @@ class SensorDiscoverer:
 
             ## Did we find a platform specific driver class?
             if (platform_driver_class is None):
-                self.logger.warn(f"Unable to find platform specific driver class in directory: {sensor_directory}")
-                continue
-
-            ## Get the most specific configuration class, and persist the driver -> configuration mapping
-            configuration_class = platform_configuration_class if (platform_configuration_class is not None) else root_configuration_class
-            sensor_config_map[platform_driver_class] = configuration_class
+                if (agnostic_driver_class is not None):
+                    ## Get the most specific configuration class, and persist the driver -> configuration mapping
+                    configuration_class = agnostic_configuration_class if (agnostic_configuration_class is not None) else root_configuration_class
+                    sensor_config_map[agnostic_driver_class] = configuration_class
+                else:
+                    self.logger.warn(f"Unable to find platform specific driver or platform agnostic class in directory: {sensor_directory}")
+                    continue
+            else:
+                ## Get the most specific configuration class, and persist the driver -> configuration mapping
+                configuration_class = platform_configuration_class if (platform_configuration_class is not None) else root_configuration_class
+                sensor_config_map[platform_driver_class] = configuration_class
 
         return sensor_config_map

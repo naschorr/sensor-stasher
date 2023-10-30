@@ -4,7 +4,6 @@ import sys
 from typing import Optional
 from pathlib import Path
 
-
 from utilities.logging.logging import Logging
 
 
@@ -36,7 +35,7 @@ class ImplementationFinder:
                 candidate_module = importlib.import_module(file.stem)
             except Exception as e:
                 ## todo remove this once all sensors have been ported over
-                self.logger.debug(f"Unable to import module: {file.stem}")
+                self.logger.debug(f"Unable to import module: {file.stem}, {e}")
                 sys.path.remove(str(file.parent))
                 continue
 

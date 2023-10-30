@@ -3,11 +3,11 @@ from pathlib import Path
 from abc import ABC
 
 from sensor.models.sensor_type import SensorType
-from sensor.models.communicator_adapter import CommunicatorAdapter
+from sensor.communicators.models.registerable_communicator_adapter import RegisterableCommunicatorAdapter
 from sensor.exceptions.device_in_use_exception import DeviceInUseException
 
 
-class OneWireCommunicator(CommunicatorAdapter, ABC):
+class OneWireCommunicator(RegisterableCommunicatorAdapter, ABC):
     ## Statics
 
     ## Keep track of all in use 1-wire device paths to avoid collisions later on

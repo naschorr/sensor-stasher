@@ -2,12 +2,11 @@ import contextlib
 from abc import ABC
 
 from sensor.models.sensor_type import SensorType
-from sensor.models.communicator_adapter import CommunicatorAdapter
-from sensor.platforms.communicators.raspberrypi_communicator import RaspberryPiCommunicator
+from sensor.communicators.models.registerable_communicator_adapter import RegisterableCommunicatorAdapter
 from sensor.exceptions.device_in_use_exception import DeviceInUseException
 
 
-class I2CCommunicator(CommunicatorAdapter, ABC):
+class I2CCommunicator(RegisterableCommunicatorAdapter, ABC):
     ## Statics
 
     ## Keep track of all in use i2c devices to avoid collisions later on
