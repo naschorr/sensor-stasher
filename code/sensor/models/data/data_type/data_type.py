@@ -12,4 +12,6 @@ class DataType(str, Enum):
     GAS = "gas"
     SOUND = "sound"
     LOCATION = "location"
+    ATMOSPHERE = "atmosphere"
+    SCALAR = "scalar"
     TEST = "test"
