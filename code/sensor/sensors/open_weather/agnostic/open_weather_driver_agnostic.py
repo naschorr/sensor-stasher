@@ -3,18 +3,18 @@ import requests
 from common.models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.communicators.web.web_communicator import WebCommunicator
 from sensor.exceptions.sensor_read_exception import SensorReadException
-from sensor.models.data.sensor_datum import SensorDatum
+from sensor.models.data.sensor_measurement import SensorMeasurement
 from sensor.platforms.sensors.agnostic_sensor import AgnosticSensor
 from sensor.sensors.open_weather.open_weather_config import OpenWeatherConfig
-from sensor.sensors.open_weather.open_weather_datum import (
-    OpenWeatherVersionDatum,
-    OpenWeatherLocationDatum,
-    OpenWeatherTemperatureDatum,
-    OpenWeatherHumidityDatum,
-    OpenWeatherAtmosphereDatum,
-    OpenWeatherPrecipitationDatum,
-    OpenWeatherPressureDatum,
-    OpenWeatherWindDatum
+from sensor.sensors.open_weather.open_weather_measurement import (
+    OpenWeatherVersionMeasurement,
+    OpenWeatherLocationMeasurement,
+    OpenWeatherTemperatureMeasurement,
+    OpenWeatherHumidityMeasurement,
+    OpenWeatherAtmosphereMeasurement,
+    OpenWeatherPrecipitationMeasurement,
+    OpenWeatherPressureMeasurement,
+    OpenWeatherWindMeasurement
 )
 from sensor.sensors.open_weather.open_weather_driver import OpenWeatherDriver
 
@@ -47,7 +47,7 @@ class OpenWeatherDriverAgnostic(OpenWeatherDriver, AgnosticSensor, WebCommunicat
 
     ## Adapter methods
 
-    async def read(self) -> list[SensorDatum]:
+    async def read(self) -> list[SensorMeasurement]:
         ## todo: async
         response = requests.get(self.url, params=self.query_parameters)
         if (response.status_code != 200):
@@ -56,12 +56,12 @@ class OpenWeatherDriverAgnostic(OpenWeatherDriver, AgnosticSensor, WebCommunicat
 
         ## Format and return the data
         return [
-            OpenWeatherVersionDatum(self.sensor_id, OpenWeatherDriver.API_VERSION),
-            OpenWeatherLocationDatum(self.sensor_id, self.latitude, self.longitude),
-            OpenWeatherTemperatureDatum(self.sensor_id, data.get("main")),
-            OpenWeatherHumidityDatum(self.sensor_id, data.get("main").get("humidity")),
-            OpenWeatherPressureDatum(self.sensor_id, data.get("main").get("pressure")),
-            OpenWeatherWindDatum(self.sensor_id, data.get("wind")),
-            OpenWeatherAtmosphereDatum(self.sensor_id, data.get("visibility"), data.get("clouds", {}).get("all")),
-            OpenWeatherPrecipitationDatum(self.sensor_id, data.get("rain", {}), data.get("snow", {}))
+            OpenWeatherVersionMeasurement(self.sensor_name, self.sensor_id, OpenWeatherDriver.API_VERSION),
+            OpenWeatherLocationMeasurement(self.sensor_name, self.sensor_id, self.latitude, self.longitude),
+            OpenWeatherTemperatureMeasurement(self.sensor_name, self.sensor_id, data.get("main")),
+            OpenWeatherHumidityMeasurement(self.sensor_name, self.sensor_id, data.get("main").get("humidity")),
+            OpenWeatherPressureMeasurement(self.sensor_name, self.sensor_id, data.get("main").get("pressure")),
+            OpenWeatherWindMeasurement(self.sensor_name, self.sensor_id, data.get("wind")),
+            OpenWeatherAtmosphereMeasurement(self.sensor_name, self.sensor_id, data.get("visibility"), data.get("clouds", {}).get("all")),
+            OpenWeatherPrecipitationMeasurement(self.sensor_name, self.sensor_id, data.get("rain", {}), data.get("snow", {}))
         ]

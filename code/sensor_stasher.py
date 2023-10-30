@@ -54,7 +54,7 @@ class SensorStasher:
             if (not sensor_data):
                 self.logger.debug("No sensor data retrieved, nothing will be stored")
             else:
-                active_sensor_ids = {sensor_datum.metadata['sensor_id']: sensor_datum for sensor_datum in sensor_data}
+                active_sensor_ids = {sensor_measurement.metadata['sensor_id']: sensor_measurement for sensor_measurement in sensor_data}
                 self.logger.debug(
                     f"Retrieved {len(sensor_data)} data point{'s' if len(sensor_data) != 1 else ''} from " +
                     f"{len(active_sensor_ids)} sensor{'s' if len(active_sensor_ids) != 1 else ''}."

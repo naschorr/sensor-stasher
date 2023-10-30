@@ -3,10 +3,10 @@ from pms7003 import Pms7003Sensor, PmsSensorException
 
 from common.models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.communicators.serial.raspberrypi.serial_communicator_raspberrypi import SerialCommunicatorRaspberryPi
-from sensor.models.data.sensor_datum import SensorDatum
+from sensor.models.data.sensor_measurement import SensorMeasurement
 from sensor.platforms.sensors.raspberrypi_sensor import RaspberryPiSensor
 from sensor.sensors.pms7003.pms7003_config import PMS7003Config
-from sensor.sensors.pms7003.pms7003_datum import PMS7003Datum
+from sensor.sensors.pms7003.pms7003_measurement import PMS7003Measurement
 from sensor.sensors.pms7003.pms7003_driver import PMS7003Driver
 
 class PMS7003DriverRaspberryPi(PMS7003Driver, RaspberryPiSensor, SerialCommunicatorRaspberryPi):
@@ -20,7 +20,7 @@ class PMS7003DriverRaspberryPi(PMS7003Driver, RaspberryPiSensor, SerialCommunica
 
     ## Adapter methods
 
-    async def read(self) -> list[SensorDatum]:
+    async def read(self) -> list[SensorMeasurement]:
         ## Todo: what if this method is called multiple times within a short interval? This really needs some flavor of lock
 
         data = {}
@@ -40,7 +40,7 @@ class PMS7003DriverRaspberryPi(PMS7003Driver, RaspberryPiSensor, SerialCommunica
             self.sleep()
 
         ## Format and return the data
-        return [PMS7003Datum(self.sensor_type, self.sensor_id, data)]
+        return [PMS7003Measurement(self.sensor_type, self.sensor_id, data)]
 
     ## Methods
 

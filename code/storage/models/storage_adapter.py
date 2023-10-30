@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from common.models.config.sensor_stasher_config import SensorStasherConfig
 from storage.models.config.storage_config import StorageConfig
 from storage.models.storage_type import StorageType
-from sensor.models.data.sensor_datum import SensorDatum
+from sensor.models.data.sensor_measurement import SensorMeasurement
 
 
 class StorageAdapter(ABC):
@@ -23,5 +23,5 @@ class StorageAdapter(ABC):
     ## Methods
 
     @abstractmethod
-    def store(self, data: list[SensorDatum]):
+    def store(self, data: list[SensorMeasurement]):
         pass

@@ -3,7 +3,7 @@ import datetime
 from sensor.models.data.data_type.data_type import DataType
 
 
-class SensorDatum:
+class SensorMeasurement:
     def __init__(self, category: DataType, sensor_type: str, sensor_id: str):
         self.metadata = {
             "sensor_type": sensor_type,

@@ -5,7 +5,7 @@ from common.models.config.sensor_stasher_config import SensorStasherConfig
 from storage.models.storage_adapter import StorageAdapter
 from storage.models.storage_type import StorageType
 from storage.clients.influx_db.influx_db_config import InfluxDBConfig
-from sensor.models.data.sensor_datum import SensorDatum
+from sensor.models.data.sensor_measurement import SensorMeasurement
 from utilities.logging.logging import Logging
 
 
@@ -35,7 +35,7 @@ class InfluxDBClient(StorageAdapter):
 
     ## Methods
 
-    def _build_points_from_data(self, data: SensorDatum) -> list[influxdb_client.Point]:
+    def _build_points_from_data(self, data: SensorMeasurement) -> list[influxdb_client.Point]:
         category = data.metadata.get('category')
         sensor_type = data.metadata.get('sensor_type')
         sensor_id = data.metadata.get('sensor_id')
@@ -57,7 +57,7 @@ class InfluxDBClient(StorageAdapter):
         return points
 
 
-    def store(self, data: list[SensorDatum]):
+    def store(self, data: list[SensorMeasurement]):
         points = []
         for datum in data:
             points.extend(self._build_points_from_data(datum))

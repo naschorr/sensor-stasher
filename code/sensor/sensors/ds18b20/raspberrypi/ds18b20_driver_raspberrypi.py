@@ -1,12 +1,12 @@
 import os
 
 from common.models.config.sensor_stasher_config import SensorStasherConfig
-from sensor.models.data.sensor_datum import SensorDatum
+from sensor.models.data.sensor_measurement import SensorMeasurement
 from sensor.platforms.sensors.raspberrypi_sensor import RaspberryPiSensor
 from sensor.communicators.onewire.raspberrypi.onewire_communicator_raspberrypi import OneWireCommunicatorRaspberryPi
 from sensor.sensors.ds18b20.ds18b20_config import DS18B20Config
 from sensor.sensors.ds18b20.ds18b20_driver import DS18B20Driver
-from sensor.sensors.ds18b20.ds18b20_datum import DS18B20Datum
+from sensor.sensors.ds18b20.ds18b20_measurement import DS18B20Measurement
 
 class DS18B20DriverRaspberryPi(DS18B20Driver, RaspberryPiSensor, OneWireCommunicatorRaspberryPi):
     def __init__(self, sensor_stasher_configuration: SensorStasherConfig, ds18b20_configuration: DS18B20Config):
@@ -25,11 +25,11 @@ class DS18B20DriverRaspberryPi(DS18B20Driver, RaspberryPiSensor, OneWireCommunic
 
     ## Adapter methods
 
-    async def read(self) -> list[SensorDatum]:
+    async def read(self) -> list[SensorMeasurement]:
         temperature_celcius = self.read_one_wire_device_temperature_celcius()
 
         return [
-            DS18B20Datum(self.sensor_type, self.sensor_id, {
+            DS18B20Measurement(self.sensor_type, self.sensor_id, {
                 "temperature_celcius": temperature_celcius + self.temperature_celcius_offset
             })
         ]

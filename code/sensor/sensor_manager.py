@@ -4,7 +4,7 @@ from common.implementation_instantiator import ImplementationInstantiator
 from common.models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.sensor_discoverer import SensorDiscoverer
 from sensor.models.sensor_adapter import SensorAdapter
-from sensor.models.data.sensor_datum import SensorDatum
+from sensor.models.data.sensor_measurement import SensorMeasurement
 from utilities.logging.logging import Logging
 
 
@@ -49,7 +49,7 @@ class SensorManager:
 
     ## Methods
 
-    async def accumulate_all_sensor_data(self) -> list[SensorDatum]:
+    async def accumulate_all_sensor_data(self) -> list[SensorMeasurement]:
         """
         Look through all registered sensors and read their data. Returns a list of all the sensor data that was read.
         """
@@ -70,7 +70,7 @@ class SensorManager:
                 if (isinstance(data, list)):
                     sensor_data.extend(data)
                     self.logger.debug(f"Read from {sensor.sensor_name} sensor with id: '{sensor.sensor_id}': {[datum.to_dict() for datum in data]}")
-                elif (isinstance(data, SensorDatum)):
+                elif (isinstance(data, SensorMeasurement)):
                     sensor_data.append(data)
                     self.logger.debug(f"Read from {sensor.sensor_name} sensor with id: '{sensor.sensor_id}': {data.to_dict()}")
             else:

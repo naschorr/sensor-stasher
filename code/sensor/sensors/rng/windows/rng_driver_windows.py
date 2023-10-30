@@ -1,9 +1,9 @@
 from common.models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.models.sensor_type import SensorType
-from sensor.models.data.sensor_datum import SensorDatum
+from sensor.models.data.sensor_measurement import SensorMeasurement
 from sensor.sensors.rng.rng_driver import RNGDriver
 from sensor.sensors.rng.rng_config import RNGConfig
-from sensor.sensors.rng.rng_datum import RNGDatum
+from sensor.sensors.rng.rng_measurement import RNGMeasurement
 from sensor.platforms.sensors.windows_sensor import WindowsSensor
 
 
@@ -19,9 +19,9 @@ class RNGDriverWindows(RNGDriver, WindowsSensor):
 
     ## Methods
 
-    async def read(self) -> list[SensorDatum]:
+    async def read(self) -> list[SensorMeasurement]:
         return [
-            RNGDatum(
+            RNGMeasurement(
                 SensorType.MISC,
                 self.sensor_id,
                 self.generate_random_number(self.min_value, self.max_value)
