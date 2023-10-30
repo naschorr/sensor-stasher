@@ -5,7 +5,7 @@ from sensor.models.data.data_type.data_type import DataType
 
 
 class DS18B20Measurement(SensorMeasurement):
-    def __init__(self, sensor_type: str, sensor_id: str, measurement: Dict):
-        super().__init__(DataType.TEMPERATURE, sensor_type, sensor_id)
+    def __init__(self, sensor_name: str, sensor_id: str, measurement: Dict):
+        super().__init__(DataType.TEMPERATURE, sensor_name, sensor_id)
 
         self.temperature_celcius = measurement.get('temperature_celcius')
