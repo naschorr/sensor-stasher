@@ -22,7 +22,7 @@ class RNGDriverWindows(RNGDriver, WindowsSensor):
     async def read(self) -> list[SensorMeasurement]:
         return [
             RNGMeasurement(
-                SensorType.MISC,
+                self.sensor_name,
                 self.sensor_id,
                 self.generate_random_number(self.min_value, self.max_value)
             )
