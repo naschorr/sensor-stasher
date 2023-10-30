@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 
 from sensor.models.data.data_type.data_type import DataType
 
@@ -9,7 +9,7 @@ class SensorMeasurement:
             "sensor_name": sensor_name,
             "sensor_id": sensor_id,
             "category": category.value,
-            "timestamp": datetime.datetime.now().isoformat()
+            "timestamp": datetime.utcnow().isoformat()
         }
 
 
