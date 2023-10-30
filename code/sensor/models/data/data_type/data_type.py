@@ -14,4 +14,3 @@ class DataType(str, Enum):
     LOCATION = "location"
     ATMOSPHERE = "atmosphere"
     SCALAR = "scalar"
-    TEST = "test"

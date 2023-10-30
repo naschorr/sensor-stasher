@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from common.models.config.sensor_stasher_config import SensorStasherConfig
-from sensor.models.data.sensor_datum import SensorDatum
+from sensor.models.data.sensor_measurement import SensorMeasurement
 from sensor.models.config.sensor_config import SensorConfig
 
 
@@ -28,5 +28,5 @@ class SensorAdapter(ABC):
     ## Methods
 
     @abstractmethod
-    async def read(self) -> list[SensorDatum]:
+    async def read(self) -> list[SensorMeasurement]:
         pass

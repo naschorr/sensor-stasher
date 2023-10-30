@@ -1,12 +1,12 @@
 from typing import Dict
 
-from sensor.models.data.sensor_datum import SensorDatum
+from sensor.models.data.sensor_measurement import SensorMeasurement
 from sensor.models.data.data_type.data_type import DataType
 
 
-class PMS7003Datum(SensorDatum):
-    def __init__(self, sensor_type: str, sensor_id: str, measurement: Dict):
-        super().__init__(DataType.AIR_QUALITY, sensor_type, sensor_id)
+class PMS7003Measurement(SensorMeasurement):
+    def __init__(self, sensor_name: str, sensor_id: str, measurement: Dict):
+        super().__init__(DataType.AIR_QUALITY, sensor_name, sensor_id)
 
         ## PM1.0 thru PM10 CF=1, standard particle
         self.pm1_0cf1 = measurement.get('pm1_0cf1')

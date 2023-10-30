@@ -49,12 +49,12 @@ class SensorDiscoverer:
                     sensor_alpha_config_windows.py
                 sensor_alpha_driver.py
                 sensor_alpha_config.py
-                sensor_alpha_datum.py
+                sensor_alpha_measurement.py
 
         Where individual sensors have their own subdirectory, base classes, and platform specific implementations:
         - Generic base class that contains platform independent common logic in the `sensor_alpha_driver.py` file and inherit from `SensorAdapter`
         - Generic base class that contains platform independent configuration in `sensor_alpha_config.py` which inherits from `SensorConfig`
-        - Sensor specific datum implementation, that will be returned regardless of the platform, which inherits from `SensorDatum`
+        - Sensor specific datum implementation, that will be returned regardless of the platform, which inherits from `SensorMeasurement`
         - Platform specific subdirectories (ex: `windows`), that contain platform specific implementations of the driver and configuration classes
             - Platform specific driver class that inherits from the generic driver class and that platform specific sensor `WindowsSensor`
             - Platform specific configuration class that inherits from the generic configuration class and that platform specific sensor `WindowsSensor`

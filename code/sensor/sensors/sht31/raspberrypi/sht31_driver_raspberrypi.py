@@ -4,9 +4,9 @@ import smbus2    # type: ignore
 
 from common.models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.communicators.i2c.raspberrypi.i2c_communicator_raspberrypi import I2CCommunicatorRaspberryPi
-from sensor.models.data.sensor_datum import SensorDatum
+from sensor.models.data.sensor_measurement import SensorMeasurement
 from sensor.platforms.sensors.raspberrypi_sensor import RaspberryPiSensor
-from sensor.sensors.sht31.sht31_datum import SHT31TemperatureDatum, SHT31HumidityDatum
+from sensor.sensors.sht31.sht31_measurement import SHT31TemperatureMeasurement, SHT31HumidityMeasurement
 from sensor.sensors.sht31.sht31_config import SHT31Config
 from sensor.sensors.sht31.sht31_driver import SHT31Driver
 
@@ -46,10 +46,10 @@ class SHT31DriverRaspberryPi(SHT31Driver, RaspberryPiSensor, I2CCommunicatorRasp
 
     ## Adapter methods
 
-    async def read(self) -> list[SensorDatum]:
+    async def read(self) -> list[SensorMeasurement]:
         '''
         Handles the process of initializing the sensor, reading the temperature and humidity data, and formatting it
-        into SensorDatum objects, and returning the sensor to an idle state.
+        into SensorMeasurement objects, and returning the sensor to an idle state.
 
         Note that one call to this method returns two datums, one for the temperature, and one for the humidity.
         Separating them helps in later classification, as they can be queried independently from one another.
@@ -61,12 +61,12 @@ class SHT31DriverRaspberryPi(SHT31Driver, RaspberryPiSensor, I2CCommunicatorRasp
             self.logger.error(f"Failed to interact with {self.sensor_type} - {self.sensor_id} over i2c. {e}")
             return []
 
-        temperature_datum = SHT31TemperatureDatum(self.sensor_type, self.sensor_id, {
+        temperature_measurement = SHT31TemperatureMeasurement(self.sensor_type, self.sensor_id, {
             "temperature_celcius": self._extract_temperature_celcius_from_bytes(data) + self.temperature_celcius_offset
         })
 
-        humdity_datum = SHT31HumidityDatum(self.sensor_type, self.sensor_id, {
+        humdity_measurement = SHT31HumidityMeasurement(self.sensor_type, self.sensor_id, {
             "humidity_relative": self._extract_humidity_relative_from_bytes(data) + self.humidity_relative_offset
         })
 
-        return [temperature_datum, humdity_datum]
+        return [temperature_measurement, humdity_measurement]

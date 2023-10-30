@@ -4,7 +4,7 @@ from common.implementation_instantiator import ImplementationInstantiator
 from common.models.config.sensor_stasher_config import SensorStasherConfig
 from storage.storage_discoverer import StorageDiscoverer
 from storage.models.storage_adapter import StorageAdapter
-from sensor.models.data.sensor_datum import SensorDatum
+from sensor.models.data.sensor_measurement import SensorMeasurement
 from utilities.logging.logging import Logging
 
 class StorageManager:
@@ -47,7 +47,7 @@ class StorageManager:
 
     ## Methods
 
-    def store(self, data: list[SensorDatum]):
+    def store(self, data: list[SensorMeasurement]):
         ## Can't store data without a place to store it
         if (not self.registered_storage_clients):
             raise RuntimeError("No storage adapters registered")
