@@ -5,15 +5,14 @@ from sensor.sensor_discoverer import SensorDiscoverer
 from sensor.models.config.sensor_config import SensorConfig
 from sensor.models.sensor_adapter import SensorAdapter
 from utilities.configuration.hierarchical_configuration import HierarchicalConfiguration
-from utilities.misc import get_root_path
 
 
 class DynamicSensorConfiguration(HierarchicalConfiguration):
+
     ## Lifecycle
 
     def __init__(self, sensor_discoverer: SensorDiscoverer):
         self.sensor_discoverer = sensor_discoverer  ## todo: SensorManager instead?
-
 
     ## Methods
 
@@ -28,7 +27,8 @@ class DynamicSensorConfiguration(HierarchicalConfiguration):
             ## Really lazy, but it works as long as new sensors are added that follow existing naming conventions.
             name = driver.__module__.split("_driver")[0]
 
-            ## Pydantic expects a name to map to a tuple of (type, default)
+            ## Pydantic expects a name to map to a tuple of (type, default). Dynamic sensors are inherently optional so
+            ## use {} as the default value.
             output[name.lower()] = (config, {})
 
         return output
