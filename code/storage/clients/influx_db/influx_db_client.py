@@ -37,7 +37,7 @@ class InfluxDBClient(StorageAdapter):
 
     def _build_points_from_data(self, data: SensorMeasurement) -> list[influxdb_client.Point]:
         category = data.metadata.get('category')
-        sensor_type = data.metadata.get('sensor_type')
+        sensor_name = data.metadata.get('sensor_name')
         sensor_id = data.metadata.get('sensor_id')
         timestamp = data.metadata.get('timestamp')
 
@@ -47,7 +47,7 @@ class InfluxDBClient(StorageAdapter):
             point = influxdb_client.Point(category) \
                 .tag("system_type", self.system_type) \
                 .tag("system_id", self.system_id) \
-                .tag("sensor_type", sensor_type) \
+                .tag("sensor_name", sensor_name) \
                 .tag("sensor_id", sensor_id) \
                 .time(timestamp) \
                 .field(key, value)
