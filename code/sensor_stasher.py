@@ -47,21 +47,21 @@ class SensorStasher:
         self.logger.debug(f"Initialized SensorStasher with system type: '{configuration.system_type}', system id: '{configuration.system_id}', and sensor poll interval: '{self.sensor_poll_interval_seconds}' seconds.")
 
 
-    async def _process_sensor_data_loop(self):
+    async def _process_sensor_measurements_loop(self):
         while (True):
-            sensor_data = await self.sensor_manager.accumulate_all_sensor_data()
+            sensor_measurements = await self.sensor_manager.accumulate_all_sensor_measurements()
 
-            if (not sensor_data):
+            if (not sensor_measurements):
                 self.logger.debug("No sensor data retrieved, nothing will be stored")
             else:
-                active_sensor_ids = {sensor_measurement.metadata['sensor_id']: sensor_measurement for sensor_measurement in sensor_data}
+                active_sensor_ids = {sensor_measurement.metadata['sensor_id']: sensor_measurement for sensor_measurement in sensor_measurements}
                 self.logger.debug(
-                    f"Retrieved {len(sensor_data)} data point{'s' if len(sensor_data) != 1 else ''} from " +
+                    f"Retrieved {len(sensor_measurements)} data point{'s' if len(sensor_measurements) != 1 else ''} from " +
                     f"{len(active_sensor_ids)} sensor{'s' if len(active_sensor_ids) != 1 else ''}."
                 )
 
-                self.storage_manager.store(sensor_data)
-                self.logger.debug(f"Stored {len(sensor_data)} data point{'s' if len(sensor_data) != 1 else ''}")
+                self.storage_manager.store(sensor_measurements)
+                self.logger.debug(f"Stored {len(sensor_measurements)} data point{'s' if len(sensor_measurements) != 1 else ''}")
 
             self.logger.debug(
                 f"Sleeping for {self.sensor_poll_interval_seconds} seconds, next poll starts at: " +
@@ -76,7 +76,7 @@ class SensorStasher:
             self.stop_monitoring()
 
         self._loop = asyncio.get_event_loop()
-        self._loop.run_until_complete(self._process_sensor_data_loop())
+        self._loop.run_until_complete(self._process_sensor_measurements_loop())
 
 
     def stop_monitoring(self):

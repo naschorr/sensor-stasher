@@ -49,12 +49,12 @@ class SensorManager:
 
     ## Methods
 
-    async def accumulate_all_sensor_data(self) -> list[SensorMeasurement]:
+    async def accumulate_all_sensor_measurements(self) -> list[SensorMeasurement]:
         """
         Look through all registered sensors and read their data. Returns a list of all the sensor data that was read.
         """
 
-        sensor_data = []
+        sensor_measurements = []
 
         sensor: SensorAdapter
         for sensor in self._registered_sensors:
@@ -68,12 +68,12 @@ class SensorManager:
 
             if (data is not None):
                 if (isinstance(data, list)):
-                    sensor_data.extend(data)
+                    sensor_measurements.extend(data)
                     self.logger.debug(f"Read from {sensor.sensor_name} sensor with id: '{sensor.sensor_id}': {[datum.to_dict() for datum in data]}")
                 elif (isinstance(data, SensorMeasurement)):
-                    sensor_data.append(data)
+                    sensor_measurements.append(data)
                     self.logger.debug(f"Read from {sensor.sensor_name} sensor with id: '{sensor.sensor_id}': {data.to_dict()}")
             else:
                 self.logger.warning(f"No data read from sensor type: '{sensor.sensor_name}' with id: '{sensor.sensor_id}'")
 
-        return sensor_data
+        return sensor_measurements
