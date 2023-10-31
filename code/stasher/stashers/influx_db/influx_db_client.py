@@ -2,9 +2,9 @@ import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 from common.models.config.sensor_stasher_config import SensorStasherConfig
-from storage.models.storage_adapter import StorageAdapter
-from storage.models.storage_type import StorageType
-from storage.clients.influx_db.influx_db_config import InfluxDBConfig
+from stasher.models.storage_adapter import StorageAdapter
+from stasher.models.storage_type import StorageType
+from stasher.stashers.influx_db.influx_db_config import InfluxDBConfig
 from sensor.models.data.sensor_measurement import SensorMeasurement
 from utilities.logging.logging import Logging
 

@@ -30,7 +30,7 @@ class SensorStasherConfig(BaseModel):
         default=get_root_path() / "code" / "sensor" / "sensors",
         description="The path to the directory containing sensor implementations."
     )
-    storage_clients_directory_path: DirectoryPath = Field(
-        default=get_root_path() / "code" / "storage" / "clients",
-        description="The path to the directory containing storage clients."
+    stashers_directory_path: DirectoryPath = Field(
+        default=get_root_path() / "code" / "stasher" / "stashers",
+        description="The path to the directory containing stasher clients."
     )

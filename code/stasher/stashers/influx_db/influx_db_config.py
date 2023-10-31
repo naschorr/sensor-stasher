@@ -1,6 +1,6 @@
 from pydantic import Field, AnyUrl
 
-from storage.models.config.storage_config import StorageConfig
+from stasher.models.config.storage_config import StorageConfig
 
 
 class InfluxDBConfig(StorageConfig):

@@ -5,8 +5,8 @@ from common.implementation_instantiator import ImplementationInstantiator
 from common.models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.sensor_manager import SensorManager
 from sensor.sensor_discoverer import SensorDiscoverer
-from storage.storage_manager import StorageManager
-from storage.storage_discoverer import StorageDiscoverer
+from stasher.storage_manager import StorageManager
+from stasher.stasher_discoverer import StasherDiscoverer
 from utilities.configuration.sensor_stasher_configuration import SensorStasherConfiguration
 from utilities.configuration.configuration import Configuration
 from utilities.logging.logging import Logging
@@ -14,37 +14,34 @@ from utilities.logging.logging import Logging
 
 class SensorStasher:
     def __init__(self):
-        ## Preconfig
-        sensor_stasher_configuration = SensorStasherConfiguration().load_configuration()
-
         ## Config
+        sensor_stasher_configuration = SensorStasherConfiguration().load_configuration()
         self.logger = Logging(sensor_stasher_configuration.logging).LOGGER
         sensor_discoverer = SensorDiscoverer()
-        storage_discoverer = StorageDiscoverer()
-        global_configuration = Configuration(sensor_discoverer, storage_discoverer)
-        configuration: SensorStasherConfig = global_configuration.sensor_stasher_configuration
+        stasher_discoverer = StasherDiscoverer()
+        global_configuration = Configuration(sensor_discoverer, stasher_discoverer)
         sensors_configuration = global_configuration.sensors_configuration
-        storage_clients_configuration = global_configuration.storage_client_configuration
-        implementation_instantiator = ImplementationInstantiator(self.logger, configuration)
+        stashers_configuration = global_configuration.stasher_configuration
+        implementation_instantiator = ImplementationInstantiator(self.logger, sensor_stasher_configuration)
 
-        self.sensor_poll_interval_seconds: int = configuration.sensor_poll_interval_seconds
+        self.sensor_poll_interval_seconds: int = sensor_stasher_configuration.sensor_poll_interval_seconds
         self._loop = None
         self.sensor_manager: SensorManager = SensorManager(
             self.logger,
-            configuration,
+            sensor_stasher_configuration,
             sensors_configuration,
             sensor_discoverer,
             implementation_instantiator
         )
         self.storage_manager: StorageManager = StorageManager(
             self.logger,
-            configuration,
-            storage_clients_configuration,
-            storage_discoverer,
+            sensor_stasher_configuration,
+            stashers_configuration,
+            stasher_discoverer,
             implementation_instantiator
         )
 
-        self.logger.debug(f"Initialized SensorStasher with system type: '{configuration.system_type}', system id: '{configuration.system_id}', and sensor poll interval: '{self.sensor_poll_interval_seconds}' seconds.")
+        self.logger.debug(f"Initialized SensorStasher with system type: '{sensor_stasher_configuration.system_type}', system id: '{sensor_stasher_configuration.system_id}', and sensor poll interval: '{self.sensor_poll_interval_seconds}' seconds.")
 
 
     async def _process_sensor_measurements_loop(self):
