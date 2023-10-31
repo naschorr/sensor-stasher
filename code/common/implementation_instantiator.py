@@ -7,8 +7,8 @@ from common.exceptions.instantiation_exception import InstantiationException
 from common.models.config.sensor_stasher_config import SensorStasherConfig
 from sensor.models.sensor_adapter import SensorAdapter
 from sensor.models.config.sensor_config import SensorConfig
-from storage.models.storage_adapter import StorageAdapter
-from storage.models.config.storage_config import StorageConfig
+from stasher.models.storage_adapter import StorageAdapter
+from stasher.models.config.storage_config import StorageConfig
 from utilities.logging.logging import Logging
 
 ## Generics to keep this clean

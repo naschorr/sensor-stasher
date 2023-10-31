@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
 from common.models.config.sensor_stasher_config import SensorStasherConfig
-from storage.models.config.storage_config import StorageConfig
-from storage.models.storage_type import StorageType
+from stasher.models.config.storage_config import StorageConfig
+from stasher.models.storage_type import StorageType
 from sensor.models.data.sensor_measurement import SensorMeasurement
 
 
@@ -10,7 +10,7 @@ class StorageAdapter(ABC):
     ## Lifecycle
 
     @abstractmethod
-    def __init__(self, sensor_stasher_configuration: SensorStasherConfig, storage_client_configuration: StorageConfig):
+    def __init__(self, sensor_stasher_configuration: SensorStasherConfig, stasher_configuration: StorageConfig):
         pass
 
     ## Properties
