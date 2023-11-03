@@ -29,8 +29,8 @@ class ImplementationFinder:
                 continue
 
             ## Tentative import
-            ## todo: too many strings are being added to the path, fix this
-            sys.path.append(str(file.parent))
+            if (str(file.parent) not in sys.path):
+                sys.path.append(str(file.parent))
             try:
                 candidate_module = importlib.import_module(file.stem)
             except Exception as e:
