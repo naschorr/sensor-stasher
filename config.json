@@ -1,8 +1,6 @@
 {
-    "system_type"                           : null,
-    "system_id"                             : null,
-    "sensor_poll_interval_seconds"          : 60,
-    "log_level"                             : "DEBUG",
-    "log_path"                              : "",
-    "log_backup_count"                      : 7
+    "sensor_poll_interval_seconds": 60,
+    "logging": {
+        "log_level": "info"
+    }
 }

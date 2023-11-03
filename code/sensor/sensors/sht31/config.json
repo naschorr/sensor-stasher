@@ -1,6 +1,0 @@
-{
-    "i2c_bus": 1,
-    "i2c_address": "0x44",
-    "temperature_celcius_offset": 0.0,
-    "humidity_relative_offset": 0.0
-}
