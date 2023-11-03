@@ -27,7 +27,7 @@ class SensorManager:
         self.implementation_instantiator = implementation_instantiator
 
         ## Sensor preparation
-        sensor_config_map = self.sensor_discoverer.discover_sensors(self.configuration.sensors_directory_path)
+        sensor_config_map = self.sensor_discoverer.discovered_sensors
         self._available_sensors: set[SensorAdapter] = set(list(sensor_config_map.keys()))
         self._registered_sensors: set[SensorAdapter] = self.implementation_instantiator.instantiate_classes(
             sensor_config_map,

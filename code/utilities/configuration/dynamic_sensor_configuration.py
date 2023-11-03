@@ -39,7 +39,7 @@ class DynamicSensorConfiguration(HierarchicalConfiguration):
         Builds a pydantic model to store configuration options for platform specific sensors.
         """
 
-        sensor_config_map = self.sensor_discoverer.discover_sensors(sensors_directory_path)
+        sensor_config_map = self.sensor_discoverer.discovered_sensors
 
         return pydantic.create_model(
             "DynamicSensorConfiguration",

@@ -17,7 +17,7 @@ class SensorStasher:
         ## Config
         sensor_stasher_configuration = SensorStasherConfiguration().load_configuration()
         self.logger = Logging(sensor_stasher_configuration.logging).LOGGER
-        sensor_discoverer = SensorDiscoverer()
+        sensor_discoverer = SensorDiscoverer(sensor_stasher_configuration.sensors_directory_path)
         stasher_discoverer = StasherDiscoverer()
         global_configuration = Configuration(sensor_discoverer, stasher_discoverer)
         sensors_configuration = global_configuration.sensors_configuration

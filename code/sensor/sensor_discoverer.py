@@ -17,9 +17,17 @@ from utilities.logging.logging import Logging
 class SensorDiscoverer:
     ## Lifecycle
 
-    def __init__(self):
+    def __init__(self, sensors_directory_path: Path):
         self.logger = Logging.LOGGER
-        self.implementation_finder = ImplementationFinder()
+        self._implementation_finder = ImplementationFinder()
+        self._sensors_directory_path = sensors_directory_path
+        self._discovered_sensors = self.discover_sensors(self._sensors_directory_path)
+
+    ## Properties
+
+    @property
+    def discovered_sensors(self) -> dict[SensorAdapter, SensorConfig]:
+        return self._discovered_sensors
 
     ## Methods
 
@@ -86,8 +94,8 @@ class SensorDiscoverer:
             directory_path, platform_directories, _ = next(os.walk(sensor_directory)) # type: ignore
 
             ## Look for root level implementation classes
-            root_driver_class = self.implementation_finder.find_implementation_class(Path(directory_path), base_class=[SensorAdapter])
-            root_configuration_class = self.implementation_finder.find_implementation_class(Path(directory_path), base_class=[SensorConfig])
+            root_driver_class = self._implementation_finder.find_implementation_class(Path(directory_path), base_class=[SensorAdapter])
+            root_configuration_class = self._implementation_finder.find_implementation_class(Path(directory_path), base_class=[SensorConfig])
 
             ## Couldn't find the driver class? No problem, just move on to the next directory
             if (root_driver_class is None):
@@ -102,14 +110,14 @@ class SensorDiscoverer:
             for platform_directory in [Path(directory_path) / platform_directory for platform_directory in platform_directories]:
                 ## Look for the platform agnostic classes, if they exist
                 if (agnostic_driver_class is None):
-                    agnostic_driver_class = self.implementation_finder.find_implementation_class(
+                    agnostic_driver_class = self._implementation_finder.find_implementation_class(
                         platform_directory,
                         base_class=[SensorAdapter, AgnosticSensor]
                     )
                 
                 if (agnostic_driver_class is None and agnostic_configuration_class is None):
                     if (agnostic_driver_class is not None):
-                        agnostic_configuration_class = self.implementation_finder.find_implementation_class(
+                        agnostic_configuration_class = self._implementation_finder.find_implementation_class(
                             platform_directory,
                             base_class=[SensorConfig, AgnosticConfig]
                         )
@@ -118,13 +126,13 @@ class SensorDiscoverer:
                 ## I've noticed issues where the builtin issubclass function doesn't correctly identify if the sub class
                 ## inherits from the base class. However it works as expected if I manually resolve the
                 ## root_driver_class. Weird.
-                platform_driver_class = self.implementation_finder.find_implementation_class(
+                platform_driver_class = self._implementation_finder.find_implementation_class(
                     platform_directory,
                     base_class=[SensorAdapter, supported_platform_sensor]
                 )
 
                 if (platform_driver_class is not None and root_configuration_class is not None):
-                    platform_configuration_class = self.implementation_finder.find_implementation_class(
+                    platform_configuration_class = self._implementation_finder.find_implementation_class(
                         platform_directory,
                         base_class=[SensorConfig, supported_platform_config]
                     )
